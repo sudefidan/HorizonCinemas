@@ -13,12 +13,14 @@ class App(Tk):
     def __init__(self):
         super().__init__()
         self.role()
-
         self.user = None
 
         self.title("Horizon Cinemas")
         self["bg"]="#1C2833"
 
+        self.navigate_to_login()
+
+    def navigate_to_login(self):
         #create a model
         self.model = LoginModel()
 
@@ -32,11 +34,7 @@ class App(Tk):
         #set the controller to view
         self.view.set_controller(self.controller)
 
-
-    def on_login_success(self):
-        #check role with map
-        self.userRole = self.roleMap[self.user.roleId]
-
+    def navigate_to_homepage(self):
         #destroy login window
         self.view.destroy()
 
@@ -54,6 +52,22 @@ class App(Tk):
         self.view.set_controller(self.controller)
 
         self.view.homepage()
+
+    def logout(self):
+        self.user = None
+        self.userRole = None
+
+        #destroy homepage window
+        self.view.destroy()
+
+        self.navigate_to_login()
+
+    def on_login_success(self):
+        #check role with map
+        self.userRole = self.roleMap[self.user.roleId]
+
+        self.navigate_to_homepage()
+
 
     def role(self):
         #open database

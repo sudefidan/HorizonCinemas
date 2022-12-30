@@ -5,7 +5,6 @@ class LoginView(Frame):
     def __init__(self, parent):
         super().__init__(parent)
         
-
         #declaring variable
         self.message = StringVar()
         self.username = StringVar()

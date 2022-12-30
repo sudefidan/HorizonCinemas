@@ -13,6 +13,10 @@ class HomepageController:
         self.showGenerateReport = application.isAdmin() or application.isManager()
         self.showAddCinema = application.isManager()
 
+    def logout(self):
+        self.application.logout()
+ 
+
 
 
 

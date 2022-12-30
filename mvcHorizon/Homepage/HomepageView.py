@@ -33,28 +33,13 @@ class HomepageView(Frame):
             frame6 = ttk.Frame(self.notebook, width=800, relief='raised', height=280)
             frame6.pack(fill='both', expand=True)
             self.notebook.add(frame6, text='Add New Cinema')
-        
 
-        '''
-        #Creating layout of homepage
-        Label(self,width="300", text="Homepage", bg="#0E6655",fg="white",font=("Arial",12,"bold")).pack()
-        #Make Booking button
-        Button(self, text="Make Booking", width=30, height=5, bg="#0E6655", font=("Arial",12,"bold")).place(x=20,y=40)
-        #Make Cancellation button
-        Button(self, text="Make Cancellation", width=50, height=5, bg="#0E6655",font=("Arial",12,"bold")).place(x=120,y=40)
-        #Make Booking In Other Cinema button for admin only
-        if self.controller.showOtherBookingButton:
-            Button(self, text="Make Booking In Other Cinema", width=50, height=5, bg="#0E6655",font=("Arial",12,"bold")).place(x=20,y=80)
-        #Manage Screening button
-        if self.controller.showManageScreeningButton:
-            Button(self, text="Manage Screening", width=50, height=5, bg="#0E6655",font=("Arial",12,"bold")).place(x=120,y=80)
-        #Generate Report button
-        if self.controller.showGenerateReportButton:
-            Button(self, text="Generate Report", width=50, height=5, bg="#0E6655",font=("Arial",12,"bold")).place(x=20,y=120)
-        #Add New Cinema button for manager only
-        if self.controller.showAddCinemaButton:
-            Button(self, text="Add New Cinema", width=50, height=5, bg="#0E6655",font=("Arial",12,"bold")).place(x=120,y=120)
-        '''
+        #logout button
+        Button(self, text="Logout", width=10, height=1, command=self.logout_clicked, bg="#0E6655",font=("Arial",12,"bold")).pack(side=BOTTOM, anchor="e")
+        
+    def logout_clicked(self):
+        if self.controller:
+            self.controller.logout()
 
         
     def set_controller(self, controller):
