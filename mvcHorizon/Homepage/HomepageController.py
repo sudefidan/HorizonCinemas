@@ -16,8 +16,7 @@ class HomepageController:
 
     def logout(self):
         self.application.logout()
- 
-    #GETUSER FUNC
+
     def get_user(self):
         return str(self.application.user.location+"\n"+self.application.user.name + " " + self.application.user.surname +" [" + self.application.userRole.roleName+"] ")
 

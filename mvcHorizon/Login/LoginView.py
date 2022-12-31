@@ -4,27 +4,39 @@ from tkinter import ttk
 class LoginView(Frame):
     def __init__(self, parent):
         super().__init__(parent)
-        
+        #create a notebook
+        self.notebook = ttk.Notebook(self)
+        self.notebook.pack(pady=10, expand=True)
+
         #declaring variable
         self.message = StringVar()
         self.username = StringVar()
         self.password = StringVar()
-        
-        #Creating layout of login form
-        Label(self,width="300", text="Login From", bg="#0E6655",fg="white",font=("Arial",12,"bold")).pack()
+
+        #create frame and add it to notebook
+        self.frame1 = ttk.Frame(self.notebook, width=800, height=50)
+        self.frame1.pack(fill='both', expand=True)
+        self.notebook.add(self.frame1, text='Login Form')
+
+        #Creating layout
+        #Login Form
+        Label(self.frame1, text="Please enter login details",bg="#0E6655", fg="white",font=("Arial",13,"bold"), width=100).pack(side=TOP)
+        Label(self.frame1, text="", height=1).pack()
         #Username Label
-        Label(self, text="Username * ",bg="#1C2833",fg="white",font=("Arial",12,"bold")).place(x=20,y=40)
+        Label(self.frame1, text="Username * ",fg="white",font=("Arial",14,"bold")).pack()
         #Username textbox
-        self.usernameField = Entry(self, textvariable=self.username,bg="#1C2833",fg="white",font=("Arial",12,"bold")).place(x=120,y=40)
+        self.usernameField = Entry(self.frame1, textvariable=self.username,bg="#1C2833",fg="white",font=("Arial",12,"bold")).pack()
+        Label(self.frame1, text="", height=1).pack()
         #Password Label
-        Label(self, text="Password * ",bg="#1C2833",fg="white",font=("Arial",12,"bold")).place(x=20,y=80)
+        Label(self.frame1, text="Password * ",fg="white",font=("Arial",14,"bold")).pack()
         #Password textbox
-        self.passwordField = Entry(self, textvariable=self.password ,show="*",bg="#1C2833",fg="white",font=("Arial",12,"bold")).place(x=120,y=80)
+        self.passwordField = Entry(self.frame1, textvariable=self.password ,show="*",bg="#1C2833",fg="white",font=("Arial",12,"bold")).pack()
+        Label(self.frame1, text="", height=2).pack()
         #Label for displaying login status[success/failed]
-        self.messageLabel = ttk.Label(self, text='',font=("Arial",12,"bold"))
-        self.messageLabel.place(x=95,y=120)
+        self.messageLabel = ttk.Label(self.frame1, text='',font=("Arial",12,"bold"))
+        self.messageLabel.place(x=290,y=160)
         #Login button
-        Button(self, text="Login", width=10, height=1, command=self.login_clicked, bg="#0E6655",font=("Arial",12,"bold")).place(x=125,y=170)
+        Button(self.frame1, text="Login", width=10, height=1, command=self.login_clicked, bg="#0E6655",font=("Arial",12,"bold")).pack()
 
         #set the controller
         self.controller = None
