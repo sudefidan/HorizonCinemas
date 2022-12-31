@@ -12,11 +12,14 @@ class HomepageController:
         self.showManageScreening = application.isAdmin() or application.isManager()
         self.showGenerateReport = application.isAdmin() or application.isManager()
         self.showAddCinema = application.isManager()
+        self.userDetail = self.application.user
 
     def logout(self):
         self.application.logout()
  
-
+    #GETUSER FUNC
+    def get_user(self):
+        return str(self.application.user.location+"\n"+self.application.user.name + " " + self.application.user.surname +" [" + self.application.userRole.roleName+"] ")
 
 
 

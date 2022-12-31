@@ -21,6 +21,6 @@ class LoginModel:
             #fetch data 
             userDict = cursor.fetchone()
             if userDict:
-                return User(userDict[0], userDict[1],userDict[2],userDict[3],userDict[4])
+                return User(userDict[0], userDict[1],userDict[2],userDict[3],userDict[4],userDict[5],userDict[6])
             else:
                 raise ValueError(f"Wrong username or password!")
