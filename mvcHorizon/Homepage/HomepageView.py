@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import ttk
 from datetime import datetime
 from tkcalendar import DateEntry
+from tkinter import messagebox
+import numpy as np
 
 class HomepageView(Frame):
     """Sude Fidan 21068639"""
@@ -73,7 +75,7 @@ class HomepageView(Frame):
         self.tree.heading('time', text='Time')
         self.tree.heading('screenid', text='Screen')
 
-    """Fiorella Scarpino"""
+    """Fiorella Scarpino 21010043"""
     def get_selection(self,event):
         widget = event.widget
         selection=widget.curselection()
@@ -153,12 +155,96 @@ class HomepageView(Frame):
         self.report.pack(fill='both', expand=True)
         self.notebook.add(self.report, text='Generate Report')
     
-    """Fiorella Scarpino"""
+    """Fiorella Scarpino 21010043"""
     def new_cinema_view(self):
         #new_cinema frame
         self.new_cinema = Frame(self.notebook, width=800, height=280)
         self.new_cinema.pack(fill='both', expand=True)
         self.notebook.add(self.new_cinema, text='Add New Cinema')
+    
+        padding = {'ipadx': 10, 'ipady': 10}
+        title = Label(self.new_cinema,text="Add New Cinema",font=14).pack(**padding)
+
+        self.cityText = StringVar()
+        city_Label = Label(self.new_cinema, text='City', font=12).pack(**padding, fill=X)
+        self.city_Entry = Entry(self.new_cinema, textvariable=self.cityText)
+        self.city_Entry.pack(**padding, fill=X)
+
+        self.locationText = StringVar()
+        location_Label = Label(self.new_cinema, text='Location', font=12).pack(**padding, fill=X)
+        self.location_Entry = Entry(self.new_cinema, textvariable=self.locationText)
+        self.location_Entry.pack(**padding, fill=X)
+
+        self.screenNumber = IntVar()
+        screen_Label = Label(self.new_cinema, text='Number of Screens', font=12).pack(**padding, fill=X)
+        self.screen_Entry = Entry(self.new_cinema, textvariable=self.screenNumber)
+        self.screen_Entry.pack(**padding, fill=X)
+
+        #to edit the capacity for each screen
+        self.getScreenNumber = Button(self.new_cinema, text='Edit Screens',command=lambda: self.getscreensChange(), width=12)
+        self.getScreenNumber.pack(**padding)
+
+    """Fiorella Scarpino 21010043"""
+    def getscreensChange(self):
+        #capacity for each screen 
+        try:
+            self.getScreenNumber['state'] = DISABLED
+            self.seatEntryArray = []
+            self.screenGet = self.screenNumber.get()
+
+            #number of screens
+            self.Screenlist = np.arange(1,self.screenGet+1)
+            self.seatingCap_Label = Label(self.new_cinema, text='Seating Capacity', font=12).pack()
+
+            #makes the same amount of labels as screens
+            for screens in range(len(self.Screenlist)):
+                #label for each screen
+                self.screenNumber = Label(self.new_cinema, text=f'Screen {screens+1}', font=12).pack()
+                self.screenEntry = Entry(self.new_cinema)
+                self.screenEntry.pack()
+                self.seatEntryArray.append(self.screenEntry)
+            
+            self.addCinemaButton = Button(self.new_cinema, text='Add New Cinema',command=lambda: self.get_newCinema(), width=12).pack()
+        except TclError:  #validation for integer
+            self.getScreenNumber['state'] = NORMAL
+            messagebox.showerror(title = 'Error',message='Please enter an integer')
+
+    """Fiorella Scarpino 21010043"""
+    def get_newCinema(self):
+         #get user data for new cinema
+        self.cityGet = self.cityText.get()
+        self.locationGet = self.locationText.get()
+        allValid = True # to validate
+        #seat capacities
+        self.seatingArray = ''
+        for s in self.seatEntryArray:
+            self.seatingArray = self.seatingArray + str(s.get()) + '\n'
+        self.seatEntry = self.seatEntryArray
+
+        if self.cityGet.isalpha() and self.locationGet.isalpha():
+            allValid = True
+            for valid in range(len(self.seatEntry)):
+                if self.seatEntry[valid].get().isdigit():
+                    allValid = True
+                else:
+                    allValid = False
+        else:
+            allValid = False
+            
+        #final validation
+        if allValid == True:
+            self.dataToAdd = self.controller.get_newCinema(self.cityGet, self.locationGet,self.seatEntry) ###HERE
+        else:
+            messagebox.showerror(title = 'Error',message='Please enter integer for seating capacity and string for city/location')
+
+    """Fiorella Scarpino 21010043"""
+    def clear_text(self):
+        #clears entry text
+        self.city_Entry.delete(0,END)
+        self.location_Entry.delete(0, END)
+        self.screen_Entry.delete(0, END) # number of screens
+        self.getScreenNumber['state'] = NORMAL
+
 
     """Sude Fidan 21068639"""
     def logout_clicked(self):
