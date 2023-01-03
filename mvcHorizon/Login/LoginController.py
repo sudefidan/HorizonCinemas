@@ -1,3 +1,4 @@
+"""Sude Fidan 21068639"""
 from Login.LoginModel import LoginModel
 from Entities.User import User
 
