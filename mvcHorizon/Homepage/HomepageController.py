@@ -1,6 +1,7 @@
 """Sude Fidan 21068639"""
 from Homepage.HomepageModel import HomepageModel
 from Entities.User import User
+from datetime import datetime
 
 class HomepageController:
     def __init__(self, application, model, view):
@@ -30,8 +31,18 @@ class HomepageController:
     def show_selection(self,value):
         return self.model.show_selection(value)
     
+    def booking_location(self):
+        return self.application.user.location
+    
+    """
+    def add_film(self):
+        return self.model.add_film()
+    def remove_film(self, filmName):
+        return self.model.remove_film(filmName)
+    """
 
+    
 
-
+    
 
 

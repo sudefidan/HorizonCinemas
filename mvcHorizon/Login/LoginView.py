@@ -1,3 +1,4 @@
+"""Sude Fidan 21068639"""
 from tkinter import *
 from tkinter import ttk
 
@@ -14,7 +15,7 @@ class LoginView(Frame):
         self.password = StringVar()
 
         #create frame and add it to notebook
-        self.frame1 = ttk.Frame(self.notebook, width=800, height=50)
+        self.frame1 = Frame(self.notebook, width=800, height=50)
         self.frame1.pack(fill='both', expand=True)
         self.notebook.add(self.frame1, text='Login Form')
 
