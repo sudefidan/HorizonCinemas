@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from tkinter import messagebox
 
 class HomepageModel:
     """Sude Fidan 21068639"""
@@ -34,6 +35,27 @@ class HomepageModel:
         cursor.close()
         return listing_table
 
+
+    """Fiorella Scarpino 21010043"""
+    #add new cinema to the database
+    def getCinemaNew(self, city,location,seatEntry):
+        self.conn.row_factory = sqlite3.Row
+        self.cur = self.conn.cursor()
+        if city == '' or location == '' or seatEntry == '':
+             messagebox.showerror(title = 'Error',message='Please enter all fields')
+        else:
+            self.cur.execute("INSERT INTO cinema VALUES (NULL,?, ?)",(city, location))
+            self.conn.commit()
+            #adds data to screen table
+            cinemaID = self.cur.lastrowid
+            for i in range(len(seatEntry)):
+                self.cur.execute("INSERT INTO Screen VALUES (NULL,?,?,?)",(seatEntry[i].get(),cinemaID,i+1))
+                self.conn.commit()
+            messagebox.showinfo(title='Complete', message='Data added to database successfully')
+            self.cur.close()
+
+    
+
     """Sude Fidan 21068639""" 
     
 """
@@ -43,7 +65,12 @@ class HomepageModel:
         cursor = self.conn.execute("DELETE FROM Film WHERE name="%s"%(filmName))
     """
 
+    
 
+
+
+    
+    
 
 
 
