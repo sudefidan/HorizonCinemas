@@ -33,6 +33,12 @@ class HomepageController:
     
     def booking_location(self):
         return self.application.user.location
+
+    """Fiorella Scarpino 21010043"""
+    def get_newCinema(self,city,location,seatEntry):
+        self.view.clear_text()
+        self.model.getCinemaNew(city,location,seatEntry)
+    
     
     """
     def add_film(self):
@@ -40,6 +46,12 @@ class HomepageController:
     def remove_film(self, filmName):
         return self.model.remove_film(filmName)
     """
+
+    
+
+    
+
+
 
     
 
