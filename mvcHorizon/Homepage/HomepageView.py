@@ -102,26 +102,27 @@ class HomepageView(Frame):
     """Cameron Povey 21011010"""
     def frame3_view(self):
         #frame3      
-        self.frame3 = ttk.Frame(self.notebook, width=800, height=280)
+        self.frame3 = Frame(self.notebook, width=800, height=280)
         self.frame3.pack(fill='both', expand=True)
         self.notebook.add(self.frame3, text='Make Cancellation')
     
     def frame4_view(self):
         #frame4
-        self.frame4 = ttk.Frame(self.notebook, width=800, height=280)
+        self.frame4 = Frame(self.notebook, width=800, height=280)
         self.frame4.pack(fill='both', expand=True)
         self.notebook.add(self.frame4, text='Manage Screening')
 
+
     def frame5_view(self):
         #frame5
-        self.frame5 = ttk.Frame(self.notebook, width=800, height=280)
+        self.frame5 = Frame(self.notebook, width=800, height=280)
         self.frame5.pack(fill='both', expand=True)
         self.notebook.add(self.frame5, text='Generate Report')
     
     """Fiorella Scarpino"""
     def frame6_view(self):
         #frame6
-        self.frame6 = ttk.Frame(self.notebook, width=800, height=280)
+        self.frame6 = Frame(self.notebook, width=800, height=280)
         self.frame6.pack(fill='both', expand=True)
         self.notebook.add(self.frame6, text='Add New Cinema')
 
