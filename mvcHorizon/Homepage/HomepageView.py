@@ -16,18 +16,18 @@ class HomepageView(Frame):
     """Sude Fidan 21068639"""
     def homepage(self):
         #create frames and add frames to notebook
-        self.frame1_view()
-        self.frame2_view()
-        self.frame3_view()
+        self.listings_view()
+        self.booking_view()
+        self.cancellation_view()
         #admin and manager access
         if self.controller.showManageScreening:
-            self.frame4_view()
+            self.manage_view()
         #admin and manager access
         if self.controller.showGenerateReport:
-            self.frame5_view()
+            self.report_view()
         #only manager access
         if self.controller.showAddCinema:
-            self.frame6_view()
+            self.new_cinema_view()
             
         #staff details 
         Label(self, text=self.controller.get_user(), width=30, height=5, fg= '#ffffff',font=("Arial",12,"bold")).place(relx = 1.0, rely = 0.0,anchor="ne")
@@ -36,19 +36,19 @@ class HomepageView(Frame):
         Button(self, text="Logout", width=10, height=1, command=self.logout_clicked, bg="#0E6655",font=("Arial",12,"bold")).pack(side=BOTTOM, anchor="e")
 
     """Fiorella Scarpino"""
-    def frame1_view(self):
-        #frame1
-        self.frame1 = Frame(self.notebook, width=800, height=280)
-        self.frame1.pack(fill='both', expand=True)
-        self.notebook.add(self.frame1, text='Listings')
+    def listings_view(self):
+        #listing frame
+        self.listing = Frame(self.notebook, width=800, height=280)
+        self.listing.pack(fill='both', expand=True)
+        self.notebook.add(self.listing, text='Listings')
         #self.controller.listings()
 
         #proceed booking button
-        Button(self.frame1, text="Proceed Booking", width=10, height=1, command=self.show_make_booking, bg="#0E6655",font=("Arial",12,"bold")).pack(side=BOTTOM)
+        Button(self.listing, text="Proceed Booking", width=10, height=1, command=self.show_make_booking, bg="#0E6655",font=("Arial",12,"bold")).pack(side=BOTTOM)
         
         #movie scrollbar
-        scrollbar = Scrollbar(self.frame1, orient="vertical")
-        self.movieFrame=Listbox(self.frame1,bg = "grey64",selectbackground="grey",activestyle = 'dotbox',yscrollcommand=scrollbar.set)
+        scrollbar = Scrollbar(self.listing, orient="vertical")
+        self.movieFrame=Listbox(self.listing,bg = "grey64",selectbackground="grey",activestyle = 'dotbox',yscrollcommand=scrollbar.set)
         self.movieFrame.pack(side=LEFT, fill='both', expand=True, anchor="n")
         scrollbar.config(command=self.movieFrame.yview)
 
@@ -59,7 +59,7 @@ class HomepageView(Frame):
             self.movieFrame.insert('end',movieName)
 
         #movie info scrollbar
-        self.textOutput = Text(self.frame1,bg = "grey64",wrap=WORD)   
+        self.textOutput = Text(self.listing,bg = "grey64",wrap=WORD)   
         self.textOutput.pack(side=TOP, fill='both', expand=True, anchor="e")
 
         #correlate film selection to data from database        
@@ -67,7 +67,7 @@ class HomepageView(Frame):
 
         #show scrollbar
         columns = ('date', 'time', 'screenid')
-        self.tree = ttk.Treeview(self.frame1, columns=columns, show='headings')
+        self.tree = ttk.Treeview(self.listing, columns=columns, show='headings')
         self.tree.pack(side=RIGHT, fill='both', expand=True, anchor="n")
         self.tree.heading('date', text='Date')
         self.tree.heading('time', text='Time')
@@ -93,38 +93,72 @@ class HomepageView(Frame):
         self.notebook.select(tab_id=1)
 
     """Cameron Povey 21011010"""
-    def frame2_view(self):
-        #frame2
-        self.frame2 = Frame(self.notebook, width=800, height=280)
-        self.frame2.pack(fill='both', expand=True)
-        self.notebook.add(self.frame2, text='Make Booking')
+    def booking_view(self):
+        #booking frame
+        self.booking = Frame(self.notebook, width=800, height=280)
+        self.booking.pack(fill='both', expand=True)
+        self.notebook.add(self.booking, text='Make Booking')
         
     """Cameron Povey 21011010"""
-    def frame3_view(self):
-        #frame3      
-        self.frame3 = Frame(self.notebook, width=800, height=280)
-        self.frame3.pack(fill='both', expand=True)
-        self.notebook.add(self.frame3, text='Make Cancellation')
+    def cancellation_view(self):
+        #cancellation frame    
+        self.cancellation = Frame(self.notebook, width=800, height=280)
+        self.cancellation.pack(fill='both', expand=True)
+        self.notebook.add(self.cancellation, text='Make Cancellation')
     
-    def frame4_view(self):
-        #frame4
-        self.frame4 = Frame(self.notebook, width=800, height=280)
-        self.frame4.pack(fill='both', expand=True)
-        self.notebook.add(self.frame4, text='Manage Screening')
+    def manage_view(self):
+        #manage frame
+        self.manage = Frame(self.notebook, width=800, height=280)
+        self.manage.pack(fill='both', expand=True)
+        self.notebook.add(self.manage, text='Manage Screening')
+        
 
+        #create nested notebook
+        self.screeningNotebook = ttk.Notebook(self.manage)
+        self.screeningNotebook.pack(pady=10, expand=True)
 
-    def frame5_view(self):
-        #frame5
-        self.frame5 = Frame(self.notebook, width=800, height=280)
-        self.frame5.pack(fill='both', expand=True)
-        self.notebook.add(self.frame5, text='Generate Report')
+        self.add_film_view()
+        self.remove_film_view()
+        self.update_show_time_view()
+        self.attach_show_view()
+
+        
+    def add_film_view(self):
+        #add film frame
+        self.addFilm = Frame(self.screeningNotebook, width=740, height=280)
+        self.addFilm.pack(fill='both', expand=True)
+        self.screeningNotebook.add(self.addFilm, text='Add Film')
+
+    def remove_film_view(self):
+        #remove film frame
+        self.removeFilm = Frame(self.screeningNotebook, width=740, height=280)
+        self.removeFilm.pack(fill='both', expand=True)
+        self.screeningNotebook.add(self.removeFilm, text='Remove Film')
+
+    def update_show_time_view(self):
+        #update show times frame
+        self.updateShowTime = Frame(self.screeningNotebook, width=740, height=280)
+        self.updateShowTime.pack(fill='both', expand=True)
+        self.screeningNotebook.add(self.updateShowTime, text='Update Show Times')
+
+    def attach_show_view(self):
+        #attach shows to screen/hall frame
+        self.attachShow = Frame(self.screeningNotebook, width=740, height=280)
+        self.attachShow.pack(fill='both', expand=True)
+        self.screeningNotebook.add(self.attachShow, text='Attach Shows to Screen/hall')
+
+    def report_view(self):
+        #report frame
+        self.report = Frame(self.notebook, width=800, height=280)
+        self.report.pack(fill='both', expand=True)
+        self.notebook.add(self.report, text='Generate Report')
     
     """Fiorella Scarpino"""
-    def frame6_view(self):
-        #frame6
-        self.frame6 = Frame(self.notebook, width=800, height=280)
-        self.frame6.pack(fill='both', expand=True)
-        self.notebook.add(self.frame6, text='Add New Cinema')
+    def new_cinema_view(self):
+        #new_cinema frame
+        self.new_cinema = Frame(self.notebook, width=800, height=280)
+        self.new_cinema.pack(fill='both', expand=True)
+        self.notebook.add(self.new_cinema, text='Add New Cinema')
 
     """Sude Fidan 21068639"""
     def logout_clicked(self):

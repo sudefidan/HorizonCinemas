@@ -34,11 +34,14 @@ class HomepageModel:
         cursor.close()
         return listing_table
 
+    """Sude Fidan 21068639""" 
     
-
-
-
-
+"""
+    def add_film(self,filmName, filmCast, filmRating, filmGenre, filmYear, filmDescription, filmDuration, filmAge):
+        cursor = self.conn.execute("INSERT INTO Film (name, cast, rating, genre, releaseYear, description, duration, ageRating) VALUES (filmName, filmCast, filmRating, filmGenre, filmYear, filmDescription, filmDuration, filmAge)" )
+    def remove_film(self, filmName):
+        cursor = self.conn.execute("DELETE FROM Film WHERE name="%s"%(filmName))
+    """
 
 
 
