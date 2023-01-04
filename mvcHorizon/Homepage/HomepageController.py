@@ -38,6 +38,10 @@ class HomepageController:
     def get_newCinema(self,city,location,seatEntry):
         self.view.clear_text()
         self.model.getCinemaNew(city,location,seatEntry)
+
+    """Fiorella Scarpino 21010043"""
+    def getTicketShowReport(self):
+        return self.model.ticketAndShowDb()
     
     
     """
