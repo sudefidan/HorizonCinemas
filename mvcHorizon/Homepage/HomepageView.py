@@ -149,12 +149,36 @@ class HomepageView(Frame):
         self.attachShow.pack(fill='both', expand=True)
         self.screeningNotebook.add(self.attachShow, text='Attach Shows to Screen/hall')
 
+    """Fiorella Scarpino 21010043"""
     def report_view(self):
         #report frame
         self.report = Frame(self.notebook, width=800, height=280)
         self.report.pack(fill='both', expand=True)
         self.notebook.add(self.report, text='Generate Report')
-    
+
+        #Number of Bookings for Each Listing
+        title = Label(self.report,text="Number of Bookings for Each Listing",font=14).pack()
+        columns = ('date', 'time', 'screenid','filmid','bookings')
+        self.reportTickettree = ttk.Treeview(self.report, columns=columns, show='headings')
+        self.reportTickettree.pack()
+        self.reportTickettree.heading('date', text='Date')
+        self.reportTickettree.heading('time', text='Time')
+        self.reportTickettree.heading('screenid', text='Screen')
+        self.reportTickettree.heading('filmid', text='Film')
+        self.reportTickettree.heading('bookings', text='Number of Bookings')
+        self.button = Button(self.report, text='data',command=lambda: self.displayTicketShowReport(), width=12).pack()
+
+    """Fiorella Scarpino 21010043"""
+    def displayTicketShowReport(self):
+        showsreport = []
+        showsArrayfromGet = []
+        self.reportdataTicketCount = self.controller.getTicketShowReport()
+        showsArrayfromGet.append(self.reportdataTicketCount[0])
+        for i in range(0,len(self.reportdataTicketCount)+1):
+            showsreport.append(showsArrayfromGet[0][i])  
+        for row in showsreport:
+            self.reportTickettree.insert('', END, values=row)
+
     """Fiorella Scarpino 21010043"""
     def new_cinema_view(self):
         #new_cinema frame
