@@ -68,7 +68,6 @@ class App(Tk):
 
         self.navigate_to_homepage()
 
-
     def role(self):
         #open database
         conn = sqlite3.connect('database/horizoncinemas.db')

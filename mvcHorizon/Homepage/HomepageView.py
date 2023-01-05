@@ -2,8 +2,14 @@ from tkinter import *
 from tkinter import ttk
 from datetime import datetime
 from tkcalendar import DateEntry
-from tkinter import messagebox
+from tkinter import messagebox 
 import numpy as np
+from ManageScreening.ManageScreeningController import ManageScreeningController
+from ManageScreening.ManageScreeningModel import ManageScreeningModel
+from ManageScreening.ManageScreeningView import ManageScreeningView
+from GenerateReport.GenerateReportController import GenerateReportController
+from GenerateReport.GenerateReportModel import GenerateReportModel
+from GenerateReport.GenerateReportView import GenerateReportView
 
 class HomepageView(Frame):
     """Sude Fidan 21068639"""
@@ -37,7 +43,7 @@ class HomepageView(Frame):
         #logout button
         Button(self, text="Logout", width=10, height=1, command=self.logout_clicked, bg="#0E6655",font=("Arial",12,"bold")).pack(side=BOTTOM, anchor="e")
 
-    """Fiorella Scarpino"""
+    """Fiorella Scarpino 21010043"""
     def listings_view(self):
         #listing frame
         self.listing = Frame(self.notebook, width=800, height=280)
@@ -108,60 +114,57 @@ class HomepageView(Frame):
         self.cancellation.pack(fill='both', expand=True)
         self.notebook.add(self.cancellation, text='Make Cancellation')
     
+    """Sude Fidan 21068639"""
     def manage_view(self):
         #manage frame
         self.manage = Frame(self.notebook, width=800, height=280)
         self.manage.pack(fill='both', expand=True)
         self.notebook.add(self.manage, text='Manage Screening')
-        
 
-        #create nested notebook
-        self.screeningNotebook = ttk.Notebook(self.manage)
-        self.screeningNotebook.pack(pady=10, expand=True)
+        #create a model
+        self.manageModel = ManageScreeningModel()
 
-        self.add_film_view()
-        self.remove_film_view()
-        self.update_show_time_view()
-        self.attach_show_view()
+        #create a view and place it on the root window
+        self.manageView = ManageScreeningView(self.manage)
+        self.manageView.pack(expand=True, fill='both')
 
-        
-    def add_film_view(self):
-        #add film frame
-        self.addFilm = Frame(self.screeningNotebook, width=740, height=280)
-        self.addFilm.pack(fill='both', expand=True)
-        self.screeningNotebook.add(self.addFilm, text='Add Film')
+        #create a controller
+        self.manageController = ManageScreeningController(self, self.manageModel, self.manageView)
 
-    def remove_film_view(self):
-        #remove film frame
-        self.removeFilm = Frame(self.screeningNotebook, width=740, height=280)
-        self.removeFilm.pack(fill='both', expand=True)
-        self.screeningNotebook.add(self.removeFilm, text='Remove Film')
+        #set the controller to view
+        self.manageView.set_controller(self.manageController)
 
-    def update_show_time_view(self):
-        #update show times frame
-        self.updateShowTime = Frame(self.screeningNotebook, width=740, height=280)
-        self.updateShowTime.pack(fill='both', expand=True)
-        self.screeningNotebook.add(self.updateShowTime, text='Update Show Times')
+        self.manageView.manage_screening()
 
-    def attach_show_view(self):
-        #attach shows to screen/hall frame
-        self.attachShow = Frame(self.screeningNotebook, width=740, height=280)
-        self.attachShow.pack(fill='both', expand=True)
-        self.screeningNotebook.add(self.attachShow, text='Attach Shows to Screen/hall')
-
+    """Sude Fidan 21068639"""
     def report_view(self):
         #report frame
         self.report = Frame(self.notebook, width=800, height=280)
         self.report.pack(fill='both', expand=True)
         self.notebook.add(self.report, text='Generate Report')
-    
+
+        #create a model
+        self.reportModel = GenerateReportModel()
+
+        #create a view and place it on the root window
+        self.reportView = GenerateReportView(self.report)
+        self.reportView.pack(expand=True, fill='both')
+
+        #create a controller
+        self.reportController = GenerateReportController(self, self.reportModel, self.reportView)
+
+        #set the controller to view
+        self.reportView.set_controller(self.reportController)
+
+        self.reportView.generate_report()
+
     """Fiorella Scarpino 21010043"""
     def new_cinema_view(self):
         #new_cinema frame
         self.new_cinema = Frame(self.notebook, width=800, height=280)
         self.new_cinema.pack(fill='both', expand=True)
         self.notebook.add(self.new_cinema, text='Add New Cinema')
-    
+
         padding = {'ipadx': 10, 'ipady': 10}
         title = Label(self.new_cinema,text="Add New Cinema",font=14).pack(**padding)
 
@@ -183,7 +186,7 @@ class HomepageView(Frame):
         #to edit the capacity for each screen
         self.getScreenNumber = Button(self.new_cinema, text='Edit Screens',command=lambda: self.getscreensChange(), width=12)
         self.getScreenNumber.pack(**padding)
-
+    
     """Fiorella Scarpino 21010043"""
     def getscreensChange(self):
         #capacity for each screen 
@@ -204,13 +207,13 @@ class HomepageView(Frame):
                 self.screenEntry.pack()
                 self.seatEntryArray.append(self.screenEntry)
             
-            self.addCinemaButton = Button(self.new_cinema, text='Add New Cinema',command=lambda: self.get_newCinema(), width=12).pack()
+            self.addCinemaButton = Button(self.new_cinema, text='Add New Cinema',command=lambda: self.add_new_cinema(), width=12).pack()
         except TclError:  #validation for integer
             self.getScreenNumber['state'] = NORMAL
             messagebox.showerror(title = 'Error',message='Please enter an integer')
 
     """Fiorella Scarpino 21010043"""
-    def get_newCinema(self):
+    def add_new_cinema(self):
          #get user data for new cinema
         self.cityGet = self.cityText.get()
         self.locationGet = self.locationText.get()
@@ -233,7 +236,7 @@ class HomepageView(Frame):
             
         #final validation
         if allValid == True:
-            self.dataToAdd = self.controller.get_newCinema(self.cityGet, self.locationGet,self.seatEntry) ###HERE
+            self.dataToAdd = self.controller.get_new_cinema(self.cityGet, self.locationGet,self.seatEntry) ###HERE
         else:
             messagebox.showerror(title = 'Error',message='Please enter integer for seating capacity and string for city/location')
 
