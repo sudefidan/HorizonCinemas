@@ -44,11 +44,13 @@ class HomepageController:
         self.view.clear_text()
         self.model.get_new_cinema(city,location,seatEntry)
     
+    """Cameron Povey 21011010"""
+    def get_film_info(self, id):
+        return (self.model.get_film_info(id))
     
+    """Cameron Povey 21011010"""
+    def cancel_cost(self):
+        return (self.model.cancel_cost())
     
-
-    
-
-    
-
-
+    def commit_cancel(self):
+        return (self.model.commit_cancel())

@@ -70,7 +70,7 @@ class App(Tk):
 
     def role(self):
         #open database
-        conn = sqlite3.connect('database/horizoncinemas.db')
+        conn = sqlite3.connect('mvcHorizon/database/horizoncinemas.db')
         #select query
         cursor = conn.execute('SELECT * from role ')
         #fetch data 

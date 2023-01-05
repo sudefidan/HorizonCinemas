@@ -8,7 +8,7 @@ class LoginModel:
     def __init__(self):
         self = self
         #open database
-        self.conn = sqlite3.connect('database/horizoncinemas.db')
+        self.conn = sqlite3.connect('mvcHorizon/database/horizoncinemas.db')
         
     def login(self, username, password):
         #get login data
