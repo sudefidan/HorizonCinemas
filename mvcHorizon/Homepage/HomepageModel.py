@@ -1,6 +1,6 @@
 import sqlite3
 from datetime import datetime
-from tkinter import messagebox   #TODO: MESSAGE BOX SHOULD BE IN VIEW
+
 
 
 
@@ -46,20 +46,14 @@ class HomepageModel:
     def get_new_cinema(self, city,location,seatEntry):
         self.conn.row_factory = sqlite3.Row
         cursor = self.conn.cursor()
-        if city == '' or location == '' or seatEntry == '':
-            #TODO: MESSAGE BOX SHOULD BE IN VIEW
-             messagebox.showerror(title = 'Error',message='Please enter all fields')
-        else:
-            self.cursor.execute("INSERT INTO cinema VALUES (NULL,?, ?)",(city, location))
+        cursor.execute("INSERT INTO cinema VALUES (NULL,?, ?)",(city, location))
+        self.conn.commit()
+        #adds data to screen table
+        cinemaID = cursor.lastrowid
+        for i in range(len(seatEntry)):
+            cursor.execute("INSERT INTO Screen VALUES (NULL,?,?,?)",(seatEntry[i].get(),cinemaID,i+1))
             self.conn.commit()
-            #adds data to screen table
-            cinemaID = self.cur.lastrowid
-            for i in range(len(seatEntry)):
-                self.cursor.execute("INSERT INTO Screen VALUES (NULL,?,?,?)",(seatEntry[i].get(),cinemaID,i+1))
-                self.conn.commit()
-            #TODO: MESSAGE BOX SHOULD BE IN VIEW
-            messagebox.showinfo(title='Complete', message='Data added to database successfully')
-            cursor.close()
+        cursor.close()
 
     """Cameron Povey 21011010"""
     def get_film_info(self, bookId):
