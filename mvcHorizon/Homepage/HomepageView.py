@@ -113,7 +113,117 @@ class HomepageView(Frame):
         self.cancellation = Frame(self.notebook, width=800, height=280)
         self.cancellation.pack(fill='both', expand=True)
         self.notebook.add(self.cancellation, text='Make Cancellation')
+
+        Label(self.cancellation, text="Enter Booking No:", bg="cyan", font=("Arial", 25), fg='Black').pack(fill=X)
+        self.cpcanBookNos = Spinbox(self.cancellation, from_=1, to=999999)
+        self.cpcanBookNos.pack(expand=True)
+        Button(self.cancellation, text="Find Booking info", bg="cyan", padx=2,pady=2, command=lambda: self.get_film_info()).pack()
+        
+        
+        #LIST OF INFO
+        self.line1 = Frame(self.cancellation)
+        self.line1.pack(fill=X, expand=True)
+        self.cpcanBookingId = Label(self.line1, text="ID: ", bg=None, fg="White", padx=10, pady=10)
+        self.cpcanBookingPrice = Label(self.line1, text="Price: ", bg=None, fg="White", padx=10, pady=10)
+        self.cpcanBookingHall = Label(self.line1, text="Hall Type: ", bg=None, fg="White", padx=10, pady=10)
+        self.cpcanBookingStaff = Label(self.line1, text="Staff: ", bg=None, fg="White", padx=10, pady=10)
+        self.cpcanBookingId.pack(fill=X, side=LEFT, expand=True)
+        self.cpcanBookingPrice.pack(fill=X, side=LEFT, expand=True)
+        self.cpcanBookingHall.pack(fill=X, side=LEFT, expand=True)
+        self.cpcanBookingStaff.pack(fill=X, side=LEFT, expand=True)
+        
+        self.line2 = Frame(self.cancellation)
+        self.line2.pack(fill=X, expand=True)
+        self.cpcanCustomerName = Label(self.line2, text="First Name: ", bg=None, fg="White", padx=10, pady=10)
+        self.cpcanCustomerPhone = Label(self.line2, text="Last Name: ", bg=None, fg="White", padx=10, pady=10)
+        self.cpcanCustomerPhone = Label(self.line2, text="Phone: ", bg=None, fg="White", padx=10, pady=10)
+        self.cpcanCustomerEmail = Label(self.line2, text="E-Mail: ", bg=None, fg="White", padx=10, pady=10)
+        self.cpcanCustomerName.pack(fill=X, side=LEFT, expand=True)
+        self.cpcanCustomerPhone.pack(fill=X, side=LEFT, expand=True)
+        self.cpcanCustomerPhone.pack(fill=X, side=LEFT, expand=True)
+        self.cpcanCustomerEmail.pack(fill=X, side=LEFT, expand=True)
+        
+        self.line3 = Frame(self.cancellation)
+        self.line3.pack(fill=X, expand=True)
+        self.cpcanFilmName = Label(self.line3, text="Film: ", bg=None, fg="White", padx=10, pady=10)
+        self.cpcanFilmGenre = Label(self.line3, text="Genre: ", bg=None, fg="White", padx=10, pady=10)
+        self.cpcanFilmYear = Label(self.line3, text="Year: ", bg=None, fg="White", padx=10, pady=10)
+        self.cpcanFilmDuration = Label(self.line3, text="Duration: ", bg=None, fg="White", padx=10, pady=10)
+        self.cpcanFilmName.pack(fill=X, side=LEFT, expand=True)
+        self.cpcanFilmGenre.pack(fill=X, side=LEFT, expand=True)
+        self.cpcanFilmYear.pack(fill=X, side=LEFT, expand=True)
+        self.cpcanFilmDuration.pack(fill=X, side=LEFT, expand=True)
+        #END OF LIST
+        
+        self.cancelCostTitle = Label(self.cancellation, text="Cancel Cost: ", font=('Arial', 25) ,pady=10, bg="cyan", fg="black")
+        self.cancelCostTitle.pack(fill=X, expand=True)
+        
+        self.cancelButton =Button(self.cancellation, height=2, padx=25, pady=25, text="Cancel", state=DISABLED)
+        self.cancelButton.pack(fill=X, expand=True)
+
+    """Cameron Povey 21011010"""
+    def get_film_info(self):
+        try: self.cancelMessage.pack_forget()
+        except: pass
+        self.cpcanFilmInfo = self.controller.get_film_info(self.cpcanBookNos.get())
+        if self.cpcanFilmInfo == 0:
+            self.cpcan_resetbook()
+            return 0
+        else:
+            self.cpcanBookingId.configure(text="ID: " + str(self.cpcanFilmInfo[0][0]))
+            self.cpcanBookingPrice.configure(text="Price: £" + str(self.cpcanFilmInfo[0][1]))
+            self.cpcanBookingHall.configure(text="Hall Type: " + str(self.cpcanFilmInfo[0][2]))
+            self.cpcanBookingStaff.configure(text="Staff: " + str(self.cpcanFilmInfo[2][0]))
+            
+            self.cpcanCustomerName.configure(text="First Name: " + str(self.cpcanFilmInfo[1][1]))
+            self.cpcanCustomerPhone.configure(text="Last Name: " + str(self.cpcanFilmInfo[1][2]))
+            self.cpcanCustomerPhone.configure(text="Phone: " + str(self.cpcanFilmInfo[1][3]))
+            self.cpcanCustomerEmail.configure(text="E-Mail: " + str(self.cpcanFilmInfo[1][4]))
+            
+            self.cpcanFilmName.configure(text="Film: " + str(self.cpcanFilmInfo[3][1]))
+            self.cpcanFilmGenre.configure(text="Genre: " + str(self.cpcanFilmInfo[3][4]))
+            self.cpcanFilmYear.configure(text="Year: " + str(self.cpcanFilmInfo[3][5]))
+            self.cpcanFilmDuration.configure(text="Duration: " + str(self.cpcanFilmInfo[3][7]))
+            
+            cpcan_cancelcost = self.controller.cancel_cost()
+            #cpcan_cancelcost = "DAY_PRIOR" #Placeholder
+            if cpcan_cancelcost == "SAME_DAY":
+                self.cancelCostTitle.configure(text="CANNOT CANCEL ON DAY OF SHOW")
+                self.cancelButton.configure(state=DISABLED, command=None)
+                return 0
+            elif cpcan_cancelcost == "DAY_PRIOR":
+                self.cancelCostTitle.configure(text="Cancel Cost: " + str(self.cpcanFilmInfo[0][1]/2))
+                self.cancelButton.configure(state=NORMAL, command=lambda: self.cpcan_cancel())
+            else:
+                self.cancelCostTitle.configure(text="Cancel Cost: FREE")
+                self.cancelButton.configure(state=NORMAL, command=lambda: self.cpcan_cancel())
     
+    """Cameron Povey 21011010"""
+    def cpcan_cancel(self):
+        cancelState = self.controller.commit_cancel()
+        if cancelState == 1: self.cancelMessage = Label(self.cancellation, text="Ticket Removed!", font=('Arial', 25) ,pady=10,width=20, bg=None, fg="Green")
+        else: self.cancelMessage = Label(self.cancellation, text="ERROR, Contact Admin", font=('Arial', 25) ,pady=10,width=20, bg=None, fg="Red")
+        self.cancelMessage.pack()
+    
+    """Cameron Povey 21011010"""
+    def cpcan_resetbook(self):
+        self.cpcanBookingId.configure(text="ID: ")
+        self.cpcanBookingPrice.configure(text="Price: ")
+        self.cpcanBookingHall.configure(text="Hall Type: ")
+        self.cpcanBookingStaff.configure(text="Staff: ")
+        self.cpcanCustomerName.configure(text="First Name: ")
+        self.cpcanCustomerPhone.configure(text="Last Name: ")
+        self.cpcanCustomerPhone.configure(text="Phone: ")
+        self.cpcanCustomerEmail.configure(text="E-Mail: ")
+        self.cpcanFilmName.configure(text="Film: ")
+        self.cpcanFilmGenre.configure(text="Genre: ")
+        self.cpcanFilmYear.configure(text="Year: ")
+        self.cpcanFilmDuration.configure(text="Duration: ") 
+        self.cancelCostTitle.configure(text="INVALID BOOKING NUMBER")
+        self.cancelButton.configure(state=DISABLED, command=None)
+        try: self.cancelMessage.pack_forget()
+        except: pass
+        
     """Sude Fidan 21068639"""
     def manage_view(self):
         #manage frame
