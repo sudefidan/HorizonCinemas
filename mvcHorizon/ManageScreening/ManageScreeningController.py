@@ -6,9 +6,11 @@ class ManageScreeningController:
         self.application = application
         self.model = model
         self.view = view
-        """
-    def add_film(self):
-        return self.model.add_film()
+        
+    def add_film(self, name, cast,rating,genre,year, description, duration, age):
+        return self.model.add_film(name, cast,rating,genre,year, description, duration, age)
+
+    """
     def remove_film(self, filmName):
         return self.model.remove_film(filmName)"""
 

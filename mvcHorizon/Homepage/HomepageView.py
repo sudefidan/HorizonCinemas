@@ -324,7 +324,7 @@ class HomepageView(Frame):
 
     """Fiorella Scarpino 21010043"""
     def add_new_cinema(self):
-         #get user data for new cinema
+        #get user data for new cinema
         self.cityGet = self.cityText.get()
         self.locationGet = self.locationText.get()
         allValid = True # to validate
@@ -346,7 +346,10 @@ class HomepageView(Frame):
             
         #final validation
         if allValid == True:
-            self.dataToAdd = self.controller.get_new_cinema(self.cityGet, self.locationGet,self.seatEntry) ###HERE
+            if self.cityGet == '' or self.locationGet == '' or self.seatEntry == '':
+                messagebox.showerror(title = 'Error',message='Please enter all fields')
+            else:
+                self.dataToAdd = self.controller.get_new_cinema(self.cityGet, self.locationGet,self.seatEntry) ###TODO: ATTACH SHOWS TO SCREEN
         else:
             messagebox.showerror(title = 'Error',message='Please enter integer for seating capacity and string for city/location')
 
@@ -357,7 +360,6 @@ class HomepageView(Frame):
         self.location_Entry.delete(0, END)
         self.screen_Entry.delete(0, END) # number of screens
         self.getScreenNumber['state'] = NORMAL
-
 
     """Sude Fidan 21068639"""
     def logout_clicked(self):

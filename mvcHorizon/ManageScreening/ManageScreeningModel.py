@@ -11,3 +11,9 @@ class ManageScreeningModel:
     """Sude Fidan 21068639"""  
     def date_format(self, date):
         return datetime.utcfromtimestamp(date/1000).strftime("%d/%m/%Y")
+
+    def add_film(self,name, cast,rating,genre,year, description, duration, age):
+        cursor = self.conn.cursor()
+        cursor.execute("INSERT INTO Film VALUES(?, ?,?, ?, ?, ?, ?,?)",(name, cast,rating,genre, year, description,duration,age))
+        self.conn.commit()
+        
