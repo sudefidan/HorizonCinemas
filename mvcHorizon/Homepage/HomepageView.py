@@ -346,7 +346,10 @@ class HomepageView(Frame):
             
         #final validation
         if allValid == True:
-            self.dataToAdd = self.controller.get_new_cinema(self.cityGet, self.locationGet,self.seatEntry) ###HERE
+            if self.cityGet == '' or self.locationGet == '' or self.seatEntry == '':
+                messagebox.showerror(title = 'Error',message='Please enter all fields')
+            else:
+                self.dataToAdd = self.controller.get_new_cinema(self.cityGet, self.locationGet,self.seatEntry)
         else:
             messagebox.showerror(title = 'Error',message='Please enter integer for seating capacity and string for city/location')
 
