@@ -10,4 +10,8 @@ class GenerateReportController:
     """Fiorella Scarpino 21010043"""
     def get_ticket_show_report(self):
         return self.model.get_ticket_show_report()
+
+    """Fiorella Scarpino 21010043"""
+    def get_monthly_cinema_report(self):
+        return self.model.get_monthly_cinema_report()
     
