@@ -77,25 +77,25 @@ class HomepageModel:
     
     """Cameron Povey 21011010"""
     def cancel_cost(self):
-        cpcan_todaytimestamp = self.get_today_unix
+        cpcanTodayTimeStamp = self.get_today_unix
         
         #DELETE - JUST TO TEST DATES
-        cpcan_formated_date = datetime.strptime("12/4/2022, 08:00:00","%m/%d/%Y, %H:%M:%S") #use backwards date
-        self.Unix_timestamp = datetime.timestamp(cpcan_formated_date)
-        cpcan_todaytimestamp = int(self.Unix_timestamp)*1000
-        print(cpcan_todaytimestamp, "- EMULATED DATE! of:" ,cpcan_formated_date)
+        cpcanFormatedDate = datetime.strptime("12/4/2022, 08:00:00","%m/%d/%Y, %H:%M:%S") #use backwards date
+        self.Unix_timestamp = datetime.timestamp(cpcanFormatedDate)
+        cpcanTodayTimeStamp = int(self.Unix_timestamp)*1000
+        print(cpcanTodayTimeStamp, "- EMULATED DATE! of:" ,cpcanFormatedDate)
         #END DELETE
         
         cursor = self.conn.execute("SELECT date, time FROM Show WHERE Id = '%s'" % (self.bookingInfo[5]))
-        cpcan_seltimeanddate = cursor.fetchone()
-        h, m = cpcan_seltimeanddate[1].split(':')
+        selectedTimeAndDate = cursor.fetchone()
+        h, m = selectedTimeAndDate[1].split(':')
         
         timems = int(h)*3600000 + int(m)*60000
-        cpcan_seltimeanddate = int(cpcan_seltimeanddate[0]) + int(timems)
+        selectedTimeAndDate = int(selectedTimeAndDate[0]) + int(timems)
         cursor.close()
         
-        if cpcan_seltimeanddate < (cpcan_todaytimestamp + 86400000): return "SAME_DAY"
-        elif cpcan_seltimeanddate < (cpcan_todaytimestamp + 172800000): return "DAY_PRIOR"
+        if selectedTimeAndDate < (cpcanTodayTimeStamp + 86400000): return "SAME_DAY"
+        elif selectedTimeAndDate < (cpcanTodayTimeStamp + 172800000): return "DAY_PRIOR"
         else: return "CANCEL_FREE"
     
     """Cameron Povey 21011010"""
