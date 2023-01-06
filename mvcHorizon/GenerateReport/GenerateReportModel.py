@@ -7,7 +7,7 @@ class GenerateReportModel:
     def __init__(self):
         self = self
         #open database
-        self.conn = sqlite3.connect('database/horizoncinemas.db')
+        self.conn = sqlite3.connect('mvcHorizon/database/horizoncinemas.db')
 
     """Sude Fidan 21068639"""  
     def date_format(self, date):
