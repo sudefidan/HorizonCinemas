@@ -93,3 +93,50 @@ class GenerateReportModel:
         for column in self.curForMonthly.description:
             self.tempDbColumns.append(column[0])
         return self.tempDbColumns
+
+    """Fiorella Scarpino 21010043"""
+    def get_top_rev_report(self):
+        totalRevFilm = []
+        self.tempDbColumns = []
+        dbColumnsFilm = []
+
+        #gets price and showid from ticket
+        self.curForMonthly = self.conn.execute("SELECT * from Ticket")
+        ticketRecordsFilm = self.curForMonthly.fetchall()
+        for i in ticketRecordsFilm:
+            totalRevFilm.append([i[1],i[5]])
+        self.getDbRowforMonthlyCinema()
+        dbColumnsFilm.extend([self.tempDbColumns[1],self.tempDbColumns[5]])
+        self.tempDbColumns.clear()
+       
+        #get filmid from show
+        for x in range(len(totalRevFilm)):
+            self.curForMonthly = self.conn.execute("SELECT * from Show WHERE id = ?",(totalRevFilm[x][1],))
+            showRecordsFilm = self.curForMonthly.fetchall()
+            for i in showRecordsFilm:
+                totalRevFilm[x].extend([i[4]])
+        self.getDbRowforMonthlyCinema()
+        dbColumnsFilm.extend([self.tempDbColumns[4]])
+        self.tempDbColumns.clear()
+
+        #get film name from film
+        for x in range(len(totalRevFilm)):
+            self.curForMonthly = self.conn.execute("SELECT * from Film WHERE id = ?",(totalRevFilm[x][2],))
+            filmRecords = self.curForMonthly.fetchall()
+            for i in filmRecords:
+                totalRevFilm[x].extend([i[1]])
+        self.getDbRowforMonthlyCinema()
+        dbColumnsFilm.extend([self.tempDbColumns[1]])
+        self.tempDbColumns.clear()
+
+        #creates dataframe to calculate top revenue film
+        df = pd.DataFrame(totalRevFilm, columns =dbColumnsFilm) 
+        tempPD = df.groupby(['filmId','name'])
+        
+        monthlyCinemaGet = tempPD['price'].sum().reset_index()
+        monthlyCinemaGet = monthlyCinemaGet.sort_values(['price'],ascending=False)
+    
+        self.curForMonthly.close()
+        return monthlyCinemaGet
+
+    
