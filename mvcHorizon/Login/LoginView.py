@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import ttk
 
 class LoginView(Frame):
+    """Sude Fidan 21068639"""  
     def __init__(self, parent):
         super().__init__(parent)
         #create a notebook
@@ -42,13 +43,16 @@ class LoginView(Frame):
         #set the controller
         self.controller = None
 
+    """Sude Fidan 21068639"""  
     def set_controller(self, controller):
         self.controller = controller
 
+    """Sude Fidan 21068639"""  
     def login_clicked(self):
         if self.controller:
             self.controller.login(self.username.get(), self.password.get())
 
+    """Sude Fidan 21068639"""  
     def show_error(self, message):
         self.messageLabel['text'] = message
         

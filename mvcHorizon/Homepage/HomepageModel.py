@@ -9,7 +9,7 @@ class HomepageModel:
     def __init__(self):
         self = self
         #open database
-        self.conn = sqlite3.connect('mvcHorizon/database/horizoncinemas.db')
+        self.conn = sqlite3.connect('database/horizoncinemas.db')
 
     """Sude Fidan 21068639"""  
     def date_format(self, date):
@@ -53,28 +53,22 @@ class HomepageModel:
     def get_new_cinema(self, city,location,seatEntry):
         self.conn.row_factory = sqlite3.Row
         cursor = self.conn.cursor()
-        if city == '' or location == '' or seatEntry == '':
-            #TODO: MESSAGE BOX SHOULD BE IN VIEW
-             messagebox.showerror(title = 'Error',message='Please enter all fields')
-        else:
-            self.cursor.execute("INSERT INTO cinema VALUES (NULL,?, ?)",(city, location))
+        cursor.execute("INSERT INTO cinema VALUES (NULL,?, ?)",(city, location))
+        self.conn.commit()
+        #adds data to screen table
+        cinemaID = cursor.lastrowid
+        for i in range(len(seatEntry)):
+            cursor.execute("INSERT INTO Screen VALUES (NULL,?,?,?)",(seatEntry[i].get(),cinemaID,i+1))
             self.conn.commit()
-            #adds data to screen table
-            cinemaID = self.cur.lastrowid
-            for i in range(len(seatEntry)):
-                self.cursor.execute("INSERT INTO Screen VALUES (NULL,?,?,?)",(seatEntry[i].get(),cinemaID,i+1))
-                self.conn.commit()
-            #TODO: MESSAGE BOX SHOULD BE IN VIEW
-            messagebox.showinfo(title='Complete', message='Data added to database successfully')
-            self.cur.close()
-    
+        cursor.close()
+
     """Cameron Povey 21011010"""
     def get_films_cinema(self, location):
-        self.strscrlist = ""
-        self.strfilmref = ""
-        self.screenlist = []
-        filmref = []
-        filmarr = []
+        self.strscrList = ""
+        self.strfilmRef = ""
+        screenList = []
+        filmRef = []
+        filmArr = []
         
         #get cinema ID
         cinemasCursor = self.conn.execute("SELECT id FROM Cinema WHERE location = '%s'" % (location))
@@ -85,164 +79,164 @@ class HomepageModel:
         
         #add them to a str list
         for i in range (len(scr)):
-            self.screenlist.append(scr[i][0])
-            if i == 0: self.strscrlist = str(self.screenlist[i])
-            else: self.strscrlist = str(self.strscrlist) + ", " + str(self.screenlist[i])
+            screenList.append(scr[i][0])
+            if i == 0: self.strscrList = str(screenList[i])
+            else: self.strscrList = str(self.strscrList) + ", " + str(screenList[i])
         
         #get filmIds from show which have the screenIds found before 
-        filmidCursor = self.conn.execute("SELECT filmId FROM Show WHERE screenId IN (%s)" % (self.strscrlist))
-        filmids = filmidCursor.fetchall()
+        filmIdCursor = self.conn.execute("SELECT filmId FROM Show WHERE screenId IN (%s)" % (self.strscrList))
+        filmIds = filmIdCursor.fetchall()
         
         #add them to another str list
-        for i in range(len(filmids)):
-            filmref.append(filmids[i][0])
-        filmref = list(dict.fromkeys(filmref))
+        for i in range(len(filmIds)):
+            filmRef.append(filmIds[i][0])
+        filmRef = list(dict.fromkeys(filmRef))
         
-        for i in range(len(filmref)):
-            if i == 0: self.strfilmref = str(self.strfilmref) + str(filmref[i])
-            else: self.strfilmref = str(self.strfilmref) + ", " + str(filmref[i])
+        for i in range(len(filmRef)):
+            if i == 0: self.strfilmRef = str(self.strfilmRef) + str(filmRef[i])
+            else: self.strfilmRef = str(self.strfilmRef) + ", " + str(filmRef[i])
         
         #get film names that are showing in the cinema
-        filmfindCursor = self.conn.execute("SELECT name FROM Film WHERE Id IN (%s)" % (self.strfilmref))
-        films = filmfindCursor.fetchall()
+        filmFindCursor = self.conn.execute("SELECT name FROM Film WHERE Id IN (%s)" % (self.strfilmRef))
+        films = filmFindCursor.fetchall()
         
         #add them to array to return
         for i in range (len(films)):
-            filmarr.append(films[i][0])
+            filmArr.append(films[i][0])
             
         cinemasCursor.close()
         screensCursor.close()
-        filmidCursor.close()
-        filmfindCursor.close()
+        filmIdCursor.close()
+        filmFindCursor.close()
         
-        return(filmarr)
+        return(filmArr)
     
     """Cameron Povey 21011010"""
-    def showings_cpbook(self,film,date):
-        self.cpbook_date = self.get_timestamp(datetime.strptime(date, "%d/%m/%Y"))
-        showarr = []
-        self.cpbookfilmsel = film
-        find_idCursor = self.conn.execute("SELECT id FROM Film WHERE name = '%s'" % (film))
-        self.selected_filmid = (find_idCursor.fetchone()[0])
+    def existed_showing(self,film,date):
+        self.bookingDate = self.get_timestamp(datetime.strptime(date, "%d/%m/%Y"))
+        showArr = []
+        self.selectedFilm = film
+        findICursor = self.conn.execute("SELECT id FROM Film WHERE name = '%s'" % (film))
+        self.selectedFilmId = (findICursor.fetchone()[0])
         
-        showfindCursor = self.conn.execute("SELECT time FROM Show WHERE filmId='%s' AND screenId IN (%s) AND date = '%s'" % (self.selected_filmid, self.strscrlist, self.cpbook_date))
-        showings = showfindCursor.fetchall()
+        showfFindCursor = self.conn.execute("SELECT time FROM Show WHERE filmId='%s' AND screenId IN (%s) AND date = '%s'" % (self.selectedFilmId, self.strscrList, self.bookingDate))
+        showings = showfFindCursor.fetchall()
         
-        for i in range (len(showings)): showarr.append(showings[i][0])
+        for i in range (len(showings)): showArr.append(showings[i][0])
         
-        find_idCursor.close()
-        showfindCursor.close()
+        findICursor.close()
+        showfFindCursor.close()
         
-        return showarr
+        return showArr
     
     """Cameron Povey 21011010"""
     def update_type(self,time):
         remaining = []
         point = ["LOWER HALL", "UPPER HALL", "VIP"]
         filled = [0,0,0]
-        maxseat = [0,0,0]
+        maxSeat = [0,0,0]
         
-        self.cpbook_time = time
-        if self.cpbook_time == "SELECT SHOW TIME": return None
+        self.bookingTime = time
+        if self.bookingTime == "SELECT SHOW TIME": return None
 
-        screenstateCursor = self.conn.execute("SELECT id FROM Show WHERE time='%s' AND filmId='%s' AND date = '%s'" % (self.cpbook_time, self.selected_filmid, self.cpbook_date))
-        self.cpbook_showid = screenstateCursor.fetchone()[0]
+        screenStateCursor = self.conn.execute("SELECT id FROM Show WHERE time='%s' AND filmId='%s' AND date = '%s'" % (self.bookingTime, self.selectedFilmId, self.bookingDate))
+        self.bookedShowId = screenStateCursor.fetchone()[0]
         
         for i in range(3):
-            amountlowCursor = self.conn.execute("SELECT Id FROM Ticket WHERE showId='%s' AND hallType = '%s'" % (self.cpbook_showid, point[i]))
-            filled[i] = len(amountlowCursor.fetchall())
+            lowHallAmountCursor = self.conn.execute("SELECT Id FROM Ticket WHERE showId='%s' AND hallType = '%s'" % (self.bookedShowId, point[i]))
+            filled[i] = len(lowHallAmountCursor.fetchall())
         
-        fettchshowCursor = self.conn.execute("SELECT screenId FROM Show WHERE Id='%s'" % (self.cpbook_showid))
-        screen = fettchshowCursor.fetchone()[0]
-        fetchcapCursor = self.conn.execute("SELECT SeatingCapacity FROM Screen WHERE Id='%s'" % (screen))
-        screencap = fetchcapCursor.fetchone()[0]
+        fetchShowCursor = self.conn.execute("SELECT screenId FROM Show WHERE Id='%s'" % (self.bookedShowId))
+        screen = fetchShowCursor.fetchone()[0]
+        fetchCapacityCursor = self.conn.execute("SELECT SeatingCapacity FROM Screen WHERE Id='%s'" % (screen))
+        screenCapacity = fetchCapacityCursor.fetchone()[0]
         
-        maxseat[0] = int(screencap * 0.3)
-        maxseat[1] = int((screencap - maxseat[0]) - 10)
-        maxseat[2] = screencap - (maxseat[1] + maxseat[0])
+        maxSeat[0] = int(screenCapacity * 0.3)
+        maxSeat[1] = int((screenCapacity - maxSeat[0]) - 10)
+        maxSeat[2] = screenCapacity - (maxSeat[1] + maxSeat[0])
         
         for i in range(3):
-            remaining.append(maxseat[i] - filled[i])
+            remaining.append(maxSeat[i] - filled[i])
             
-        screenstateCursor.close()
-        amountlowCursor.close()
-        fettchshowCursor.close()
-        fetchcapCursor.close()
+        screenStateCursor.close()
+        lowHallAmountCursor.close()
+        fetchShowCursor.close()
+        fetchCapacityCursor.close()
         return remaining
     
     """Cameron Povey 21011010"""
-    def calculate_cost(self, typesel, amount):
-        if self.cpbook_time == "SELECT SHOW TIME": return None
+    def calculate_cost(self, typeSelection, amount):
+        if self.bookingTime == "SELECT SHOW TIME": return None
         
         timepoint = ["MORNING", "AFTERNOON", "EVENING"]
-        type_change = [1, 1.2, 1.44]
+        typeChangeDict = [1, 1.2, 1.44]
         
-        adtime = str(self.cpbook_time)+str(':00')
-        dt_time = datetime.strptime(adtime, '%H:%M:%S').time()
+        adTime = str(self.bookingTime)+str(':00')
+        dtTime = datetime.strptime(adTime, '%H:%M:%S').time()
         
         #end times
-        timechange = ['12:00:00', '17:00:00', '23:59:59']
+        timeChange = ['12:00:00', '17:00:00', '23:59:59']
         for i in range(3):
-            timechange[i] = datetime.strptime(str(timechange[i]), '%H:%M:%S').time()
+            timeChange[i] = datetime.strptime(str(timeChange[i]), '%H:%M:%S').time()
             
         for i in range(3):
-            if (dt_time.hour < timechange[i].hour):
-                timeframe = timepoint[i]
+            if (dtTime.hour < timeChange[i].hour):
+                timeFrame = timepoint[i]
                 break
-            if (dt_time.hour == timechange[i].hour):
-                if (dt_time.minute > timechange[i].minute):
-                    timeframe = timepoint[i+1]
+            if (dtTime.hour == timeChange[i].hour):
+                if (dtTime.minute > timeChange[i].minute):
+                    timeFrame = timepoint[i+1]
                 else:
-                    timeframe = timepoint[i]
+                    timeFrame = timepoint[i]
                 break
-        standardstateCursor = self.conn.execute("SELECT price FROM Ticket_Pricing WHERE cinemaId = '%s' AND  showTimeType = '%s'" % (self.cinId, timeframe))
-        stan_price = standardstateCursor.fetchone()[0]
+        priceCursor = self.conn.execute("SELECT price FROM Ticket_Pricing WHERE cinemaId = '%s' AND  showTimeType = '%s'" % (self.cinId, timeFrame))
+        standardPrice = priceCursor.fetchone()[0]
         
-        priceper = stan_price * type_change[typesel]
-        self.ovrprice = priceper * int(amount)
-        standardstateCursor.close()
-        self.type_selected = typesel
-        return self.ovrprice
+        priceper = standardPrice * typeChangeDict[typeSelection]
+        self.overprice = priceper * int(amount)
+        priceCursor.close()
+        self.selectedType = typeSelection
+        return self.overprice
     
     """Cameron Povey 21011010"""
-    def book_film(self, fname, lname, phone, email, card, exp, cvv, staffid):
-        halllist = ["LOWER HALL", "UPPER HALL", "VIP"]
-        halltype = halllist[self.type_selected]
+    def book_film(self, fname, lname, phone, email, card, exp, cvv, staffId):
+        hallList = ["LOWER HALL", "UPPER HALL", "VIP"]
+        hallType = hallList[self.selectedType]
         cursor = self.conn.cursor()
         
         #check for customer
-        customerid = self.check_customer(fname, lname, phone, email)
+        customerId = self.check_customer(fname, lname, phone, email)
         #create customer if doesnt exist
-        if customerid == None:
-            customerid = self.create_customer(fname, lname, phone, email, card, exp, cvv)
+        if customerId == None:
+            customerId = self.create_customer(fname, lname, phone, email, card, exp, cvv)
         #create ticket
-        customerid = customerid[0]
-        cursor.execute("INSERT INTO Ticket (price, hallType, customerId, staffId, showId) VALUES (?, ?, ?, ?, ?)", (str(self.ovrprice), halltype, customerid, staffid, self.cpbook_showid))
+        customerId = customerId[0]
+        cursor.execute("INSERT INTO Ticket (price, hallType, customerId, staffId, showId) VALUES (?, ?, ?, ?, ?)", (str(self.overprice), hallType, customerId, staffId, self.bookedShowId))
         cursor.close()
         self.conn.commit()
         
-        returntickinfoCursor = self.conn.execute("SELECT Id, price FROM Ticket WHERE customerId = '%s' AND showId = '%s'" % (customerid, self.cpbook_showid))
-        tickinfo = (returntickinfoCursor.fetchone())
-        returntickinfoCursor.close()#close?
-        return [tickinfo, self.cpbookfilmsel]
+        returnTicketInfoCursor = self.conn.execute("SELECT Id, price FROM Ticket WHERE customerId = '%s' AND showId = '%s'" % (customerId, self.bookedShowId))
+        tickinfo = (returnTicketInfoCursor.fetchone())
+        returnTicketInfoCursor.close()#close?
+        return [tickinfo, self.selectedFilm]
     
     """Cameron Povey 21011010"""
     def create_customer(self, fname, lname, phone, email, card, exp, cvv):
-        expdate = str(exp.strftime("%m/%y"))
-        phoneno = str(phone)
+        expiryDate = str(exp.strftime("%m/%y"))
+        phoneNo = str(phone)
         cursor = self.conn.cursor()
-        cursor.execute("INSERT INTO Customer (name, surname, phone, email, cardNumber, expiryDate, CVV) VALUES(?, ?, ?, ?, ?, ?, ?)", (fname, lname, phoneno, email, card, expdate, cvv))
+        cursor.execute("INSERT INTO Customer (name, surname, phone, email, cardNumber, expiryDate, CVV) VALUES(?, ?, ?, ?, ?, ?, ?)", (fname, lname, phoneNo, email, card, expiryDate, cvv))
         cursor.close()
         self.conn.commit()
         return self.check_customer(fname, lname, phone, email)
     
     """Cameron Povey 21011010"""
     def check_customer(self, fname, lname, phone, email):
-        checkstateCursor = self.conn.execute("SELECT Id FROM Customer WHERE name = '%s' AND surname = '%s' AND phone = '%s' AND email = '%s'" % (fname, lname, phone, email))
-        customerstate = checkstateCursor.fetchone()
-        checkstateCursor.close()
-        return (customerstate)
-    
+        checkStateCursor = self.conn.execute("SELECT Id FROM Customer WHERE name = '%s' AND surname = '%s' AND phone = '%s' AND email = '%s'" % (fname, lname, phone, email))
+        customerState = checkStateCursor.fetchone()
+        checkStateCursor.close()
+        return (customerState)
+
     """Cameron Povey 21011010"""
     def get_film_info(self, bookId):
         cursorBooking = self.conn.execute("SELECT * FROM Ticket WHERE Id = '%s'" % (bookId))
@@ -259,13 +253,7 @@ class HomepageModel:
     
     """Cameron Povey 21011010"""
     def cancel_cost(self):
-        cpcanTodayTimeStamp = self.get_today_unix
-        
-        #DELETE - JUST TO TEST DATES
-        cpcanFormatedDate = datetime.strptime("12/4/2022, 08:00:00","%m/%d/%Y, %H:%M:%S") #use backwards date
-        self.Unix_timestamp = datetime.timestamp(cpcanFormatedDate)
-        cpcanTodayTimeStamp = int(self.Unix_timestamp)*1000
-        #END DELETE
+        todayTime = self.get_today_unix
         
         cursor = self.conn.execute("SELECT date, time FROM Show WHERE Id = '%s'" % (self.bookingInfo[5]))
         selectedTimeAndDate = cursor.fetchone()
@@ -275,8 +263,8 @@ class HomepageModel:
         selectedTimeAndDate = int(selectedTimeAndDate[0]) + int(timems)
         cursor.close()
         
-        if selectedTimeAndDate < (cpcanTodayTimeStamp + 86400000): return "SAME_DAY"
-        elif selectedTimeAndDate < (cpcanTodayTimeStamp + 172800000): return "DAY_PRIOR"
+        if selectedTimeAndDate < (todayTime + 86400000): return "SAME_DAY"
+        elif selectedTimeAndDate < (todayTime + 172800000): return "DAY_PRIOR"
         else: return "CANCEL_FREE"
     
     """Cameron Povey 21011010"""
@@ -292,6 +280,7 @@ class HomepageModel:
             self.conn.commit()
             return 0
         
+    
     
 
 
