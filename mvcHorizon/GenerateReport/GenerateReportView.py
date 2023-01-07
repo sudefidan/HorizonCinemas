@@ -72,12 +72,27 @@ class GenerateReportView(Frame):
         for row in self.monthlyListCinema1:
             self.monthlyCinemaTree.insert('', END, values=row)
 
-    """Cameron Povey 21011010"""
+    """Fiorella Scarpino 21010043"""
     def top_film_view(self):
         #top revenue generating film frame
         self.topFilm = Frame(self.notebook, width=740, height=280)
         self.topFilm.pack(fill='both', expand=True)
         self.notebook.add(self.topFilm, text='Top revenue\ngenerating film')
+        columns = ('filmid','name','totalrevfilm')
+        self.topRevTree = ttk.Treeview(self.topFilm, columns=columns, show='headings')
+        self.topRevTree.pack()
+        self.topRevTree.heading('filmid', text='Film ID')
+        self.topRevTree.heading('name', text='Name')
+        self.topRevTree.heading('totalrevfilm', text='Total Revenue (£)')
+        self.topRevButton = Button(self.topFilm, text='Generate Data',command=lambda: self.displayTopRev(), width=12).pack()
+    
+        
+    """Fiorella Scarpino 21010043"""
+    def displayTopRev(self):
+        self.topRev = self.controller.get_top_rev_report()
+        self.topRevCinema = self.topRev.to_numpy().tolist()
+        for row in self.topRevCinema:
+            self.topRevTree.insert('', END, values=row)
 
     """Cameron Povey 21011010"""
     def staffs_booking_view(self):
