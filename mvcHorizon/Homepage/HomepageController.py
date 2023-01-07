@@ -13,7 +13,7 @@ class HomepageController:
         self.showManageScreening = application.isAdmin() or application.isManager()
         self.showGenerateReport = application.isAdmin() or application.isManager()
         self.showAddCinema = application.isManager()
-        self.userDetail = self.application.user
+        self.userDetail = application.user
     
     """Sude Fidan 21068639"""
     def logout(self):
@@ -43,7 +43,7 @@ class HomepageController:
     def get_new_cinema(self,city,location,seatEntry):
         self.view.clear_text()
         self.model.get_new_cinema(city,location,seatEntry)
-    
+        
     """Cameron Povey 21011010"""
     def get_films_cinema(self):
         return (self.model.get_films_cinema(self.application.user.location))
@@ -59,7 +59,7 @@ class HomepageController:
     """Cameron Povey 21011010"""
     def calculate_cost(self, typesel, amount):
         return (self.model.calculate_cost(typesel, amount))
-        
+    
     """Cameron Povey 21011010"""
     def book_film(self, fname, lname, phone, email, card, exp, cvv):
         return self.model.book_film(fname, lname, phone, email, card, exp, cvv, self.application.user.id)

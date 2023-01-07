@@ -3,13 +3,12 @@ from datetime import datetime
 from tkinter import messagebox   #TODO: MESSAGE BOX SHOULD BE IN VIEW
 
 
-
 class HomepageModel:
     """Sude Fidan 21068639"""
     def __init__(self):
         self = self
         #open database
-        self.conn = sqlite3.connect('database/horizoncinemas.db')
+        self.conn = sqlite3.connect('mvcHorizon/database/horizoncinemas.db')
 
     """Sude Fidan 21068639"""  
     def date_format(self, date):
@@ -263,7 +262,7 @@ class HomepageModel:
         selectedTimeAndDate = int(selectedTimeAndDate[0]) + int(timems)
         cursor.close()
         
-        if selectedTimeAndDate < (todayTime + 86400000): return "SAME_DAY"
+        if selectedTimeAndDate < (int(todayTime) + 86400000): return "SAME_DAY"
         elif selectedTimeAndDate < (todayTime + 172800000): return "DAY_PRIOR"
         else: return "CANCEL_FREE"
     

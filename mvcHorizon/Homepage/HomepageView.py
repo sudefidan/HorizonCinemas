@@ -380,8 +380,8 @@ class HomepageView(Frame):
         self.notebook.add(self.cancellation, text='Make Cancellation')
 
         Label(self.cancellation, text="Enter Booking No:", bg="cyan", font=("Arial", 25), fg='Black').pack(fill=X)
-        cancellationBookingNos = Spinbox(self.cancellation, from_=1, to=999999)
-        cancellationBookingNos.pack(expand=True)
+        self.cancellationBookingNos = Spinbox(self.cancellation, from_=1, to=999999)
+        self.cancellationBookingNos.pack(expand=True)
         Button(self.cancellation, text="Find Booking info", bg="cyan", padx=2,pady=2, command=lambda: self.get_film_info()).pack()
         
         

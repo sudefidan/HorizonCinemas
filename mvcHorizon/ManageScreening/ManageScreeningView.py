@@ -141,7 +141,92 @@ class ManageScreeningView(Frame):
         self.updateShowTime = Frame(self.notebook, width=740, height=280)
         self.updateShowTime.pack(fill='both', expand=True)
         self.notebook.add(self.updateShowTime, text='Update Show Times')
-
+        
+        #line 1
+        line1 = Frame(self.updateShowTime, bg="cyan", pady=5)
+        line1.pack(fill=X)
+        
+        Label(line1, text="Enter show ID", font=("Arial", 25), fg='Black', bg='Cyan').pack(fill=BOTH)
+        self.update_shows = Spinbox(line1, from_=1, to=999999)
+        self.update_shows.pack(fill=X)
+        Button(line1, text="Find Show Times", bg="cyan", padx=2,pady=2, command=lambda: self.getShowTimes()).pack(fill=Y)
+        
+        #line 2
+        line2 = Frame(self.updateShowTime, bg="white", pady=5)
+        line2.pack(fill=X)
+        
+        self.cpUST_date = Label(line2, text="Date: ", bg="white", fg="black", padx=5, pady=5)
+        self.cpUST_time = Label(line2, text="Time: ", bg="white", fg="black", padx=5, pady=5)
+        self.cpUST_cinema = Label(line2, text="Cinema: ", bg="white", fg="black", padx=5, pady=5)
+        self.cpUST_film = Label(line2, text="Film: ", bg="white", fg="black", padx=5, pady=5)
+        
+        self.cpUST_date.pack(fill=X, side=LEFT)
+        self.cpUST_time.pack(fill=X, side=LEFT)
+        self.cpUST_cinema.pack(fill=X, side=LEFT)
+        self.cpUST_film.pack(fill=X, side=LEFT)
+        
+        #editDate
+        editInfo = Frame(self.updateShowTime, bg="white", pady=5)
+        editInfo.pack(fill=BOTH)
+        
+        self.cpUST_editdate = DateEntry(editInfo, bg=None, state=DISABLED)
+        self.cpUST_editdate.pack()
+        self.cpUST_dateconfirm = Button(editInfo, background="blue", command=lambda: self.cpUST_changeinfo.configure(state=NORMAL), text="confirm", state=DISABLED)
+        self.cpUST_dateconfirm.pack()
+        
+        self.cpUST_hourshow = IntVar()
+        self.cpUST_minshow = IntVar()
+        
+        #editTime
+        editTime = Frame(self.updateShowTime, bg="white", pady=5)
+        editTime.pack(fill=BOTH)
+        
+        self.cpUST_timechangeH = Spinbox(editTime, from_=00, to=24, width=2, state=DISABLED, textvariable=self.cpUST_hourshow, command=lambda: self.cpUST_changeinfo.configure(state=NORMAL))#disabled
+        self.cpUST_timechangeH.pack(side=LEFT)
+        self.cpUST_middlebit = Label(editTime, text=":", state=DISABLED)#disabled
+        self.cpUST_middlebit.pack(side=LEFT)
+        self.cpUST_timechangeM = Spinbox(editTime, from_=00, to=59, width=2, state=DISABLED, textvariable=self.cpUST_minshow, command=lambda: self.cpUST_changeinfo.configure(state=NORMAL))#disabled
+        self.cpUST_timechangeM.pack(side=LEFT)
+        
+        updateframe = Frame(self.updateShowTime, height=200, width=200, bg=None, pady=10, padx=50)
+        updateframe.pack(fill=X)
+        self.cpUST_changeinfo = Button(updateframe, text="UPDATE", state=DISABLED, font=("Arial", 25), command=lambda: self.confirmChange())
+        self.cpUST_changeinfo.pack(fill=X, side=TOP)
+        
+        self.setstate = [self.cpUST_editdate, self.cpUST_timechangeH, self.cpUST_middlebit, self.cpUST_timechangeM, self.cpUST_dateconfirm]
+    
+    """Cameron Povey 21011010"""
+    def getShowTimes(self):
+        showid = self.update_shows.get()
+        self.upshowinfo = self.controller.getShowTimes(showid)
+        
+        if self.upshowinfo == 0: 
+            for part in self.setstate:
+                part.configure(state=DISABLED)
+                print("NOT FOUND")
+            return 0
+        
+        self.cpUST_date.configure(text="Date: " + str(self.upshowinfo[1]))
+        self.cpUST_time.configure(text="Time: " + str(self.upshowinfo[2]))
+        self.cpUST_cinema.configure(text="Cinema: " + str(self.upshowinfo[3]))
+        self.cpUST_film.configure(text="Film: " + str(self.upshowinfo[4]))
+        self.cpUST_changeinfo.configure(state=DISABLED)
+        
+        for part in self.setstate:
+            part.configure(state=NORMAL)
+            
+        self.cpUST_editdate.set_date(self.upshowinfo[1])
+        h, m = self.upshowinfo[2].split(':')
+        self.cpUST_hourshow.set(h)
+        self.cpUST_minshow.set(m)
+    
+    """Cameron Povey 21011010"""
+    def confirmChange(self):
+        date = self.cpUST_editdate.get()
+        timeh = self.cpUST_timechangeH.get()
+        timem = self.cpUST_timechangeM.get()
+        self.controller.confirmChange(date, timeh, timem)
+    
     """Cameron Povey 21011010"""
     def attach_show_view(self):
         #attach shows to screen/hall frame
