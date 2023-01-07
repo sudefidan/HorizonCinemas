@@ -14,4 +14,8 @@ class GenerateReportController:
     """Fiorella Scarpino 21010043"""
     def get_monthly_cinema_report(self):
         return self.model.get_monthly_cinema_report()
+
+    """Fiorella Scarpino 21010043"""
+    def get_top_rev_report(self):
+        return self.model.get_top_rev_report()
     
