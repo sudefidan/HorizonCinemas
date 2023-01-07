@@ -1,16 +1,21 @@
+"""Sude Fidan 21068639"""
+"""Cameron Povey 21011010"""
 from ManageScreening.ManageScreeningModel import ManageScreeningModel
 from Entities.User import User
 
 class ManageScreeningController:
+    """Sude Fidan 21068639"""  
     def __init__(self, application, model, view):
         self.application = application
         self.model = model
         self.view = view
-        
-    def add_film(self, name, cast,rating,genre,year, description, duration, age):
-        return self.model.add_film(name, cast,rating,genre,year, description, duration, age)
 
-    """
-    def remove_film(self, filmName):
-        return self.model.remove_film(filmName)"""
+    """Sude Fidan 21068639""" 
+    def commit_add_film(self, name, cast,rating,genre,year, description, duration, age):
+        return self.model.commit_add_film(name, cast,rating,genre,year, description, duration, age)
+
+    """Sude Fidan 21068639""" 
+    def commit_remove_film(self, name):
+        return self.model.commit_remove_film(name)
+
 

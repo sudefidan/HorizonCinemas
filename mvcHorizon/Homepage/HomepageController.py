@@ -45,6 +45,26 @@ class HomepageController:
         self.model.get_new_cinema(city,location,seatEntry)
     
     """Cameron Povey 21011010"""
+    def get_films_cinema(self):
+        return (self.model.get_films_cinema(self.application.user.location))
+
+    """Cameron Povey 21011010"""
+    def existed_showing(self,film,date):
+        return (self.model.existed_showing(film,date))
+
+    """Cameron Povey 21011010"""
+    def update_type(self,time):
+        return (self.model.update_type(time))
+
+    """Cameron Povey 21011010"""
+    def calculate_cost(self, typesel, amount):
+        return (self.model.calculate_cost(typesel, amount))
+        
+    """Cameron Povey 21011010"""
+    def book_film(self, fname, lname, phone, email, card, exp, cvv):
+        return self.model.book_film(fname, lname, phone, email, card, exp, cvv, self.application.user.id)
+    
+    """Cameron Povey 21011010"""
     def get_film_info(self, id):
         return (self.model.get_film_info(id))
     

@@ -5,11 +5,13 @@ import os
 import hashlib
 
 class LoginModel:
+    """Sude Fidan 21068639"""
     def __init__(self):
         self = self
         #open database
         self.conn = sqlite3.connect('database/horizoncinemas.db')
         
+    """Sude Fidan 21068639"""
     def login(self, username, password):
         #get login data
         if username=='' or password=='':

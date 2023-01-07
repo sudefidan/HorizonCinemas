@@ -16,6 +16,13 @@ class HomepageModel:
         return datetime.utcfromtimestamp(date/1000).strftime("%d/%m/%Y")
     
     """Cameron Povey 21011010"""
+    def get_timestamp(self,date_dmy_form):
+        format = date_dmy_form.strftime("%m/%d/%Y, %H:%M:%S")
+        format = datetime.strptime(format,"%m/%d/%Y, %H:%M:%S")
+        timestamp = datetime.timestamp(format)
+        return (int(timestamp)*1000)
+    
+    """Cameron Povey 21011010"""
     def get_today_unix(self):
         current_time = datetime.now()
         current_time = current_time.strftime("%m/%d/%Y, %H:%M:%S")
@@ -56,6 +63,181 @@ class HomepageModel:
         cursor.close()
 
     """Cameron Povey 21011010"""
+    def get_films_cinema(self, location):
+        self.strscrList = ""
+        self.strfilmRef = ""
+        screenList = []
+        filmRef = []
+        filmArr = []
+        
+        #get cinema ID
+        cinemasCursor = self.conn.execute("SELECT id FROM Cinema WHERE location = '%s'" % (location))
+        self.cinId = cinemasCursor.fetchone()[0]
+        #fetch list of screens from cinema location
+        screensCursor = self.conn.execute("SELECT id FROM Screen WHERE cinemaID = '%s'" % (self.cinId))
+        scr = screensCursor.fetchall()
+        
+        #add them to a str list
+        for i in range (len(scr)):
+            screenList.append(scr[i][0])
+            if i == 0: self.strscrList = str(screenList[i])
+            else: self.strscrList = str(self.strscrList) + ", " + str(screenList[i])
+        
+        #get filmIds from show which have the screenIds found before 
+        filmIdCursor = self.conn.execute("SELECT filmId FROM Show WHERE screenId IN (%s)" % (self.strscrList))
+        filmIds = filmIdCursor.fetchall()
+        
+        #add them to another str list
+        for i in range(len(filmIds)):
+            filmRef.append(filmIds[i][0])
+        filmRef = list(dict.fromkeys(filmRef))
+        
+        for i in range(len(filmRef)):
+            if i == 0: self.strfilmRef = str(self.strfilmRef) + str(filmRef[i])
+            else: self.strfilmRef = str(self.strfilmRef) + ", " + str(filmRef[i])
+        
+        #get film names that are showing in the cinema
+        filmFindCursor = self.conn.execute("SELECT name FROM Film WHERE Id IN (%s)" % (self.strfilmRef))
+        films = filmFindCursor.fetchall()
+        
+        #add them to array to return
+        for i in range (len(films)):
+            filmArr.append(films[i][0])
+            
+        cinemasCursor.close()
+        screensCursor.close()
+        filmIdCursor.close()
+        filmFindCursor.close()
+        
+        return(filmArr)
+    
+    """Cameron Povey 21011010"""
+    def existed_showing(self,film,date):
+        self.bookingDate = self.get_timestamp(datetime.strptime(date, "%d/%m/%Y"))
+        showArr = []
+        self.selectedFilm = film
+        findICursor = self.conn.execute("SELECT id FROM Film WHERE name = '%s'" % (film))
+        self.selectedFilmId = (findICursor.fetchone()[0])
+        
+        showfFindCursor = self.conn.execute("SELECT time FROM Show WHERE filmId='%s' AND screenId IN (%s) AND date = '%s'" % (self.selectedFilmId, self.strscrList, self.bookingDate))
+        showings = showfFindCursor.fetchall()
+        
+        for i in range (len(showings)): showArr.append(showings[i][0])
+        
+        findICursor.close()
+        showfFindCursor.close()
+        
+        return showArr
+    
+    """Cameron Povey 21011010"""
+    def update_type(self,time):
+        remaining = []
+        point = ["LOWER HALL", "UPPER HALL", "VIP"]
+        filled = [0,0,0]
+        maxSeat = [0,0,0]
+        
+        self.bookingTime = time
+        if self.bookingTime == "SELECT SHOW TIME": return None
+
+        screenStateCursor = self.conn.execute("SELECT id FROM Show WHERE time='%s' AND filmId='%s' AND date = '%s'" % (self.bookingTime, self.selectedFilmId, self.bookingDate))
+        self.bookedShowId = screenStateCursor.fetchone()[0]
+        
+        for i in range(3):
+            lowHallAmountCursor = self.conn.execute("SELECT Id FROM Ticket WHERE showId='%s' AND hallType = '%s'" % (self.bookedShowId, point[i]))
+            filled[i] = len(lowHallAmountCursor.fetchall())
+        
+        fetchShowCursor = self.conn.execute("SELECT screenId FROM Show WHERE Id='%s'" % (self.bookedShowId))
+        screen = fetchShowCursor.fetchone()[0]
+        fetchCapacityCursor = self.conn.execute("SELECT SeatingCapacity FROM Screen WHERE Id='%s'" % (screen))
+        screenCapacity = fetchCapacityCursor.fetchone()[0]
+        
+        maxSeat[0] = int(screenCapacity * 0.3)
+        maxSeat[1] = int((screenCapacity - maxSeat[0]) - 10)
+        maxSeat[2] = screenCapacity - (maxSeat[1] + maxSeat[0])
+        
+        for i in range(3):
+            remaining.append(maxSeat[i] - filled[i])
+            
+        screenStateCursor.close()
+        lowHallAmountCursor.close()
+        fetchShowCursor.close()
+        fetchCapacityCursor.close()
+        return remaining
+    
+    """Cameron Povey 21011010"""
+    def calculate_cost(self, typeSelection, amount):
+        if self.bookingTime == "SELECT SHOW TIME": return None
+        
+        timepoint = ["MORNING", "AFTERNOON", "EVENING"]
+        typeChangeDict = [1, 1.2, 1.44]
+        
+        adTime = str(self.bookingTime)+str(':00')
+        dtTime = datetime.strptime(adTime, '%H:%M:%S').time()
+        
+        #end times
+        timeChange = ['12:00:00', '17:00:00', '23:59:59']
+        for i in range(3):
+            timeChange[i] = datetime.strptime(str(timeChange[i]), '%H:%M:%S').time()
+            
+        for i in range(3):
+            if (dtTime.hour < timeChange[i].hour):
+                timeFrame = timepoint[i]
+                break
+            if (dtTime.hour == timeChange[i].hour):
+                if (dtTime.minute > timeChange[i].minute):
+                    timeFrame = timepoint[i+1]
+                else:
+                    timeFrame = timepoint[i]
+                break
+        priceCursor = self.conn.execute("SELECT price FROM Ticket_Pricing WHERE cinemaId = '%s' AND  showTimeType = '%s'" % (self.cinId, timeFrame))
+        standardPrice = priceCursor.fetchone()[0]
+        
+        priceper = standardPrice * typeChangeDict[typeSelection]
+        self.overprice = priceper * int(amount)
+        priceCursor.close()
+        self.selectedType = typeSelection
+        return self.overprice
+    
+    """Cameron Povey 21011010"""
+    def book_film(self, fname, lname, phone, email, card, exp, cvv, staffId):
+        hallList = ["LOWER HALL", "UPPER HALL", "VIP"]
+        hallType = hallList[self.selectedType]
+        cursor = self.conn.cursor()
+        
+        #check for customer
+        customerId = self.check_customer(fname, lname, phone, email)
+        #create customer if doesnt exist
+        if customerId == None:
+            customerId = self.create_customer(fname, lname, phone, email, card, exp, cvv)
+        #create ticket
+        customerId = customerId[0]
+        cursor.execute("INSERT INTO Ticket (price, hallType, customerId, staffId, showId) VALUES (?, ?, ?, ?, ?)", (str(self.overprice), hallType, customerId, staffId, self.bookedShowId))
+        cursor.close()
+        self.conn.commit()
+        
+        returnTicketInfoCursor = self.conn.execute("SELECT Id, price FROM Ticket WHERE customerId = '%s' AND showId = '%s'" % (customerId, self.bookedShowId))
+        tickinfo = (returnTicketInfoCursor.fetchone())
+        returnTicketInfoCursor.close()#close?
+        return [tickinfo, self.selectedFilm]
+    
+    """Cameron Povey 21011010"""
+    def create_customer(self, fname, lname, phone, email, card, exp, cvv):
+        expiryDate = str(exp.strftime("%m/%y"))
+        phoneNo = str(phone)
+        cursor = self.conn.cursor()
+        cursor.execute("INSERT INTO Customer (name, surname, phone, email, cardNumber, expiryDate, CVV) VALUES(?, ?, ?, ?, ?, ?, ?)", (fname, lname, phoneNo, email, card, expiryDate, cvv))
+        cursor.close()
+        self.conn.commit()
+        return self.check_customer(fname, lname, phone, email)
+    
+    """Cameron Povey 21011010"""
+    def check_customer(self, fname, lname, phone, email):
+        checkStateCursor = self.conn.execute("SELECT Id FROM Customer WHERE name = '%s' AND surname = '%s' AND phone = '%s' AND email = '%s'" % (fname, lname, phone, email))
+        customerState = checkStateCursor.fetchone()
+        checkStateCursor.close()
+        return (customerState)
+
+    """Cameron Povey 21011010"""
     def get_film_info(self, bookId):
         cursorBooking = self.conn.execute("SELECT * FROM Ticket WHERE Id = '%s'" % (bookId))
         self.bookingInfo= cursorBooking.fetchone()
@@ -71,14 +253,7 @@ class HomepageModel:
     
     """Cameron Povey 21011010"""
     def cancel_cost(self):
-        cpcanTodayTimeStamp = self.get_today_unix
-        
-        #DELETE - JUST TO TEST DATES
-        cpcanFormatedDate = datetime.strptime("12/4/2022, 08:00:00","%m/%d/%Y, %H:%M:%S") #use backwards date
-        self.Unix_timestamp = datetime.timestamp(cpcanFormatedDate)
-        cpcanTodayTimeStamp = int(self.Unix_timestamp)*1000
-        print(cpcanTodayTimeStamp, "- EMULATED DATE! of:" ,cpcanFormatedDate)
-        #END DELETE
+        todayTime = self.get_today_unix
         
         cursor = self.conn.execute("SELECT date, time FROM Show WHERE Id = '%s'" % (self.bookingInfo[5]))
         selectedTimeAndDate = cursor.fetchone()
@@ -88,15 +263,15 @@ class HomepageModel:
         selectedTimeAndDate = int(selectedTimeAndDate[0]) + int(timems)
         cursor.close()
         
-        if selectedTimeAndDate < (cpcanTodayTimeStamp + 86400000): return "SAME_DAY"
-        elif selectedTimeAndDate < (cpcanTodayTimeStamp + 172800000): return "DAY_PRIOR"
+        if selectedTimeAndDate < (todayTime + 86400000): return "SAME_DAY"
+        elif selectedTimeAndDate < (todayTime + 172800000): return "DAY_PRIOR"
         else: return "CANCEL_FREE"
     
     """Cameron Povey 21011010"""
     def commit_cancel(self):
         cursor = self.conn.cursor()
         try:
-            self.cursor.execute("DELETE FROM Ticket WHERE Id = '%s'" % (self.bookingInfo[0]))
+            cursor.execute("DELETE FROM Ticket WHERE Id = '%s'" % (self.bookingInfo[0]))
             cursor.close()
             self.conn.commit()
             return 1
