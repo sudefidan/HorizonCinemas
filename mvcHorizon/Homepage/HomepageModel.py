@@ -1,8 +1,9 @@
+"""Sude Fidan 21068639"""
+"""Cameron Povey 21011010"""
+"""Fiorella Scarpino 21010043"""
 import sqlite3
 from datetime import datetime
 from tkinter import messagebox   #TODO: MESSAGE BOX SHOULD BE IN VIEW
-
-
 
 class HomepageModel:
     """Sude Fidan 21068639"""

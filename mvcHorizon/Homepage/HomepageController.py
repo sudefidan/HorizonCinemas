@@ -1,8 +1,12 @@
+"""Sude Fidan 21068639"""
+"""Fiorella Scarpino 21010043"""
+"""Cameron Povey 21011010"""
 from Homepage.HomepageModel import HomepageModel
 from Entities.User import User
 from datetime import datetime
 
 class HomepageController:
+    """Sude Fidan 21068639"""
     def __init__(self, application, model, view):
         self.application = application
         self.model = model
@@ -72,6 +76,7 @@ class HomepageController:
     def cancel_cost(self):
         return (self.model.cancel_cost())
     
+    """Cameron Povey 21011010"""
     def commit_cancel(self):
         return (self.model.commit_cancel())
     

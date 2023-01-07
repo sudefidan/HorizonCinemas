@@ -1,3 +1,6 @@
+"""Sude Fidan 21068639"""
+"""Fiorella Scarpino 21010043"""
+"""Cameron Povey 21011010"""
 from tkinter import *
 from tkinter import ttk
 from datetime import datetime
@@ -357,7 +360,8 @@ class HomepageView(Frame):
         self.filmReturn.pack()
         self.backBooking = Button(self.booking, text="Back to booking", font=('Arial', 25), pady=10, command=lambda: self.reset_screen())
         self.backBooking.pack()
-        
+    
+    """Cameron Povey 21011010"""
     def reset_screen(self):
         for items in self.widgetlist:
             items.pack(fill=X)
@@ -383,7 +387,6 @@ class HomepageView(Frame):
         cancellationBookingNos = Spinbox(self.cancellation, from_=1, to=999999)
         cancellationBookingNos.pack(expand=True)
         Button(self.cancellation, text="Find Booking info", bg="cyan", padx=2,pady=2, command=lambda: self.get_film_info()).pack()
-        
         
         #LIST OF INFO
         line1 = Frame(self.cancellation)
@@ -558,7 +561,7 @@ class HomepageView(Frame):
         self.screen_Entry = Entry(self.new_cinema, textvariable=self.screenNumber)
         self.screen_Entry.pack(**padding, fill=X)
 
-        #to edit the capacity for each screen
+        #TODO: to edit the capacity for each screen
         self.getScreenNumber = Button(self.new_cinema, text='Edit Screens',command=lambda: self.getscreensChange(), width=12)
         self.getScreenNumber.pack(**padding)
     

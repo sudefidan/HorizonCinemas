@@ -56,4 +56,41 @@ class ManageScreeningModel:
                 cursor.close()
                 self.conn.commit()
                 return 0
+    
+    """Cameron Povey 21011010"""
+    def get_show_times(self, showId):
+        showReturn = []
+        self.changedShowId = showId
         
+        cursor = self.conn.execute("SELECT * FROM Show WHERE Id = '%s'" % (self.changedShowId))
+        showInfo = cursor.fetchone()
+        if showInfo == None: return 0
+        
+        showReturn.append(showInfo[0])
+        showReturn.append(datetime.utcfromtimestamp(showInfo[1]/1000).strftime("%d/%m/%Y"))
+        showReturn.append(showInfo[2])
+        
+        screen = (self.conn.execute("SELECT cinemaID FROM Screen WHERE Id = '%s'" % (showInfo[3]))).fetchone()[0]
+        showReturn.append((self.conn.execute("SELECT location FROM Cinema WHERE Id = '%s'" % (screen))).fetchone()[0])
+        showReturn.append((self.conn.execute("SELECT name FROM Film WHERE Id = '%s'" % (showInfo[4]))).fetchone()[0])
+        
+        cursor.close()
+        return showReturn
+    
+    """Cameron Povey 21011010"""
+    def confirm_change(self, date, hour, min):
+        cursor = self.conn.cursor()
+        
+        if int(min) == str(00): pass
+        elif int(min) < 10: min = str(0) + str(min)
+        time = str(hour) + ":" + str(min)
+        
+        date = datetime.strptime(date, "%d/%m/%Y")
+        date = date.strftime("%m/%d/%Y, %H:%M:%S")
+        formatedDate = datetime.strptime(date,"%m/%d/%Y, %H:%M:%S")
+        self.timeStamp = int(datetime.timestamp(formatedDate))*1000
+        
+        cursor.execute("UPDATE Show SET date = ?, time = ? WHERE Id = ?", (int(self.timeStamp),time,self.changedShowId))
+        cursor.close()
+        self.conn.commit()
+        return 0

@@ -142,13 +142,97 @@ class ManageScreeningView(Frame):
         self.updateShowTime.pack(fill='both', expand=True)
         self.notebook.add(self.updateShowTime, text='Update Show Times')
 
+        #line 1
+        line1 = Frame(self.updateShowTime, bg="cyan", pady=5)
+        line1.pack(fill=X)
+        
+        Label(line1, text="Enter show ID", font=("Arial", 25), fg='Black', bg='Cyan').pack(fill=BOTH)
+        self.update_shows = Spinbox(line1, from_=1, to=999999)
+        self.update_shows.pack(fill=X)
+        Button(line1, text="Find Show Times", bg="cyan", padx=2,pady=2, command=lambda: self.get_show_times()).pack(fill=Y)
+        
+        #line 2
+        line2 = Frame(self.updateShowTime, bg="white", pady=5)
+        line2.pack(fill=X)
+        
+        self.oldShowDate = Label(line2, text="Date: ", bg="white", fg="black", padx=5, pady=5)
+        self.oldShowTime = Label(line2, text="Time: ", bg="white", fg="black", padx=5, pady=5)
+        self.oldShowCinema = Label(line2, text="Cinema: ", bg="white", fg="black", padx=5, pady=5)
+        self.oldShowFilm = Label(line2, text="Film: ", bg="white", fg="black", padx=5, pady=5)
+        
+        self.oldShowDate.pack(fill=X, side=LEFT)
+        self.oldShowTime.pack(fill=X, side=LEFT)
+        self.oldShowCinema.pack(fill=X, side=LEFT)
+        self.oldShowFilm.pack(fill=X, side=LEFT)
+        
+        #edit date
+        editInfo = Frame(self.updateShowTime, bg="white", pady=5)
+        editInfo.pack(fill=BOTH)
+        
+        self.newDate = DateEntry(editInfo, bg=None, state=DISABLED)
+        self.newDate.pack()
+        self.newDateConfirm = Button(editInfo, background="blue", command=lambda: self.changeInfo.configure(state=NORMAL), text="Confirm", state=DISABLED)
+        self.newDateConfirm.pack()
+        
+        self.hourShow = IntVar()
+        self.minShow = IntVar()
+        
+        #edit time
+        editTime = Frame(self.updateShowTime, bg="white", pady=5)
+        editTime.pack(fill=BOTH)
+        
+        self.hoursEdited = Spinbox(editTime, from_=00, to=24, width=2, state=DISABLED, textvariable=self.hourShow, command=lambda: self.changeInfo.configure(state=NORMAL))#disabled
+        self.hoursEdited.pack(side=LEFT)
+        middleEdit = Label(editTime, text=":", state=DISABLED)#disabled
+        middleEdit.pack(side=LEFT)
+        self.minEdited = Spinbox(editTime, from_=00, to=59, width=2, state=DISABLED, textvariable=self.minShow, command=lambda: self.changeInfo.configure(state=NORMAL))#disabled
+        self.minEdited.pack(side=LEFT)
+        
+        updateframe = Frame(self.updateShowTime, height=200, width=200, bg=None, pady=10, padx=50)
+        updateframe.pack(fill=X)
+        self.changeInfo = Button(updateframe, text="UPDATE", state=DISABLED, font=("Arial", 25), command=lambda: self.confirm_change())
+        self.changeInfo.pack(fill=X, side=TOP)
+        
+        self.setState = [self.newDate, self.hoursEdited, middleEdit, self.minEdited, self.newDateConfirm]
+    
+    """Cameron Povey 21011010"""
+    def get_show_times(self):
+        showId = self.update_shows.get()
+        self.updatedShowInfo = self.controller.get_show_times(showId)
+        
+        if self.updatedShowInfo == 0: 
+            for part in self.setState:
+                part.configure(state=DISABLED)
+                print("NOT FOUND")
+            return 0
+        
+        self.oldShowDate.configure(text="Date: " + str(self.updatedShowInfo[1]))
+        self.oldShowTime.configure(text="Time: " + str(self.updatedShowInfo[2]))
+        self.oldShowCinema.configure(text="Cinema: " + str(self.updatedShowInfo[3]))
+        self.oldShowFilm.configure(text="Film: " + str(self.updatedShowInfo[4]))
+        self.changeInfo.configure(state=DISABLED)
+        
+        for part in self.setState:
+            part.configure(state=NORMAL)
+            
+        self.newDate.set_date(self.updatedShowInfo[1])
+        h, m = self.updatedShowInfo[2].split(':')
+        self.hourShow.set(h)
+        self.minShow.set(m)
+    
+    """Cameron Povey 21011010"""
+    def confirm_change(self):
+        date = self.newDate.get()
+        timeh = self.hoursEdited.get()
+        timem = self.minEdited.get()
+        self.controller.confirm_change(date, timeh, timem)
+
     """Cameron Povey 21011010"""
     def attach_show_view(self):
         #attach shows to screen/hall frame
         self.attachShow = Frame(self.notebook, width=740, height=280)
         self.attachShow.pack(fill='both', expand=True)
         self.notebook.add(self.attachShow, text='Attach Shows to Screen/hall')
-
 
     """Sude Fidan 21068639"""
     def set_controller(self, controller):

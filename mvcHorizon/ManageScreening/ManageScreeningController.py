@@ -18,4 +18,12 @@ class ManageScreeningController:
     def commit_remove_film(self, name):
         return self.model.commit_remove_film(name)
 
+    """Cameron Povey 21011010"""
+    def get_show_times(self, showId):
+        return self.model.get_show_times(showId)
+    
+    """Cameron Povey 21011010"""
+    def confirm_change(self, date, hour, min):
+        return self.model.confirm_change(date, hour, min)
+
 

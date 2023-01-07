@@ -1,3 +1,6 @@
+"""Sude Fidan 21068639"""
+"""Fiorella Scarpino 21010043"""
+"""Cameron Povey 21011010"""
 from tkinter import *
 from tkinter import ttk
 from datetime import datetime
@@ -23,61 +26,74 @@ class GenerateReportView(Frame):
     """Fiorella Scarpino 21010043"""
     def listings_booking_view(self):
         #number of bookings for each listing frame
-        self.listingsBooking = Frame(self.notebook, width=740, height=280)
-        self.listingsBooking.pack(fill='both', expand=True)
-        self.notebook.add(self.listingsBooking, text='Number of bookings\nfor each listing')
+        listingsBooking = Frame(self.notebook, width=740, height=280)
+        listingsBooking.pack(fill='both', expand=True)
+        self.notebook.add(listingsBooking, text='Number of bookings\nfor each listing')
 
         columns = ('date', 'time', 'screenid','filmid','bookings')
-        self.reportTickettree = ttk.Treeview(self.listingsBooking, columns=columns, show='headings')
-        self.reportTickettree.pack()
-        self.reportTickettree.heading('date', text='Date')
-        self.reportTickettree.heading('time', text='Time')
-        self.reportTickettree.heading('screenid', text='Screen')
-        self.reportTickettree.heading('filmid', text='Film')
-        self.reportTickettree.heading('bookings', text='Number of Bookings')
-        self.button = Button(self.listingsBooking, text='data',command=lambda: self.displayTicketShowReport(), width=12).pack()
+        self.reportTicketTree = ttk.Treeview(listingsBooking, columns=columns, show='headings')
+        self.reportTicketTree.pack()
+        self.reportTicketTree.heading('date', text='Date')
+        self.reportTicketTree.heading('time', text='Time')
+        self.reportTicketTree.heading('screenid', text='Screen')
+        self.reportTicketTree.heading('filmid', text='Film')
+        self.reportTicketTree.heading('bookings', text='Number of Bookings')
+        Button(listingsBooking, text='data',command=lambda: self.display_ticket_show_report(), width=12).pack()
     
     """Fiorella Scarpino 21010043"""
-    def displayTicketShowReport(self):
-        showsreport = []
+    def display_ticket_show_report(self):
+        showsrReport = []
         showsArrayfromGet = []
-        self.reportdataTicketCount = self.controller.get_ticket_show_report()
-        showsArrayfromGet.append(self.reportdataTicketCount[0])
-        for i in range(0,len(self.reportdataTicketCount)+1):
-            showsreport.append(showsArrayfromGet[0][i])  
-        for row in showsreport:
-            self.reportTickettree.insert('', END, values=row)
-
+        reportdataTicketCount = self.controller.get_ticket_show_report()
+        showsArrayfromGet.append(reportdataTicketCount[0])
+        for i in range(0,len(reportdataTicketCount)+1):
+            showsrReport.append(showsArrayfromGet[0][i])  
+        for row in showsrReport:
+            self.reportTicketTree.insert('', END, values=row)
 
     """Fiorella Scarpino 21010043"""
     def monthly_revenue_view(self):
         #otal monthly revenue for each cinema frame
-        self.monthlyRevenue = Frame(self.notebook, width=740, height=280)
-        self.monthlyRevenue.pack(fill='both', expand=True)
-        self.notebook.add(self.monthlyRevenue, text='Monthly revenue\nfor each cinema')
+        monthlyRevenue = Frame(self.notebook, width=740, height=280)
+        monthlyRevenue.pack(fill='both', expand=True)
+        self.notebook.add(monthlyRevenue, text='Monthly revenue\nfor each cinema')
 
         columns = ('month','city','location','totalrev')
-        self.monthlyCinemaTree = ttk.Treeview(self.monthlyRevenue, columns=columns, show='headings')
+        self.monthlyCinemaTree = ttk.Treeview(monthlyRevenue, columns=columns, show='headings')
         self.monthlyCinemaTree.pack()
         self.monthlyCinemaTree.heading('month', text='Month')
         self.monthlyCinemaTree.heading('city', text='City')
         self.monthlyCinemaTree.heading('location', text='Location')
         self.monthlyCinemaTree.heading('totalrev', text='Total Revenue (£)')
-        self.monthlyCinemaButton = Button(self.monthlyRevenue, text='Generate Data',command=lambda: self.displayMonthlyCinema(), width=12).pack()
+        Button(monthlyRevenue, text='Generate Data',command=lambda: self.display_monthly_cinema(), width=12).pack()
     
     """Fiorella Scarpino 21010043"""
-    def displayMonthlyCinema(self):
+    def display_monthly_cinema(self):
         self.monthlyListCinema = self.controller.get_monthly_cinema_report()
         self.monthlyListCinema1 = self.monthlyListCinema.to_numpy().tolist()
         for row in self.monthlyListCinema1:
             self.monthlyCinemaTree.insert('', END, values=row)
 
-    """Cameron Povey 21011010"""
+    """Fiorella Scarpino 21010043"""
     def top_film_view(self):
         #top revenue generating film frame
-        self.topFilm = Frame(self.notebook, width=740, height=280)
-        self.topFilm.pack(fill='both', expand=True)
-        self.notebook.add(self.topFilm, text='Top revenue\ngenerating film')
+        topFilm = Frame(self.notebook, width=740, height=280)
+        topFilm.pack(fill='both', expand=True)
+        self.notebook.add(topFilm, text='Top revenue\ngenerating film')
+        columns = ('filmid','name','totalrevfilm')
+        self.topRevTree = ttk.Treeview(topFilm, columns=columns, show='headings')
+        self.topRevTree.pack()
+        self.topRevTree.heading('filmid', text='Film ID')
+        self.topRevTree.heading('name', text='Name')
+        self.topRevTree.heading('totalrevfilm', text='Total Revenue (£)')
+        Button(topFilm, text='Generate Data',command=lambda: self.display_top_rev(), width=12).pack()
+    
+    """Fiorella Scarpino 21010043"""
+    def display_top_rev(self):
+        self.topRev = self.controller.get_top_rev_report()
+        topRevCinema = self.topRev.to_numpy().tolist()
+        for row in topRevCinema:
+            self.topRevTree.insert('', END, values=row)
 
     """Cameron Povey 21011010"""
     def staffs_booking_view(self):
@@ -85,7 +101,6 @@ class GenerateReportView(Frame):
         self.staffsBooking = Frame(self.notebook, width=740, height=280)
         self.staffsBooking.pack(fill='both', expand=True)
         self.notebook.add(self.staffsBooking, text='Monthly list of staff\nmaking number of bookings')
-    
 
     """Sude Fidan 21068639"""
     def set_controller(self, controller):

@@ -1,6 +1,6 @@
+"""Sude Fidan 21068639"""
 from tkinter import *
 import sqlite3
-
 from Entities.Role import Role
 from Login.LoginModel import LoginModel
 from Login.LoginView import LoginView
