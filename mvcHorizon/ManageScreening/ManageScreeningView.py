@@ -167,7 +167,7 @@ class ManageScreeningView(Frame):
         
         #editDate
         editInfo = Frame(self.updateShowTime, bg="white", pady=5)
-        editInfo.pack(fill=BOTH)
+        editInfo.pack(fill=X)
         
         self.cpUST_editdate = DateEntry(editInfo, bg=None, state=DISABLED)
         self.cpUST_editdate.pack()
@@ -179,7 +179,7 @@ class ManageScreeningView(Frame):
         
         #editTime
         editTime = Frame(self.updateShowTime, bg="white", pady=5)
-        editTime.pack(fill=BOTH)
+        editTime.pack(fill=X)
         
         self.cpUST_timechangeH = Spinbox(editTime, from_=00, to=24, width=2, state=DISABLED, textvariable=self.cpUST_hourshow, command=lambda: self.cpUST_changeinfo.configure(state=NORMAL))#disabled
         self.cpUST_timechangeH.pack(side=LEFT)
@@ -226,6 +226,7 @@ class ManageScreeningView(Frame):
         timeh = self.cpUST_timechangeH.get()
         timem = self.cpUST_timechangeM.get()
         self.controller.confirmChange(date, timeh, timem)
+        
     
     """Cameron Povey 21011010"""
     def attach_show_view(self):
@@ -233,10 +234,80 @@ class ManageScreeningView(Frame):
         self.attachShow = Frame(self.notebook, width=740, height=280)
         self.attachShow.pack(fill='both', expand=True)
         self.notebook.add(self.attachShow, text='Attach Shows to Screen/hall')
+        
+        self.ASVmessageS = False
+        self.ASVmessageE = False
+        
+        line1 = Frame(self.attachShow, bg="cyan", pady=5)
+        line1.pack(fill=X)
+        
+        self.upShowTitle = Label(line1, text="Enter show ID", bg="cyan", font=("Arial", 25), fg='Black')
+        self.upShowTitle.pack(fill=BOTH, expand=True)
+        self.upShowSpin = Spinbox(line1, from_=1, to=999999)
+        self.upShowSpin.pack(fill=Y)
+        Button(line1, text="Find Show Times", bg="cyan", padx=2,pady=2, command=lambda: self.fetchScreenNumbers()).pack(fill=Y) #function
 
+        line2 = Frame(self.attachShow, bg="cyan", pady=5)
+        line2.pack(fill=X)
+        
+        self.reShowDate = Label(line2, text="Date: ", bg="white", fg="black", padx=10, pady=10)
+        self.reShowDate.pack(fill=X, side=LEFT, expand=True)
+        self.reShowTime = Label(line2, text="Time: ", bg="white", fg="black", padx=10, pady=10)
+        self.reShowTime.pack(fill=X, side=LEFT, expand=True)
+        self.reShowFilm = Label(line2, text="Film: ", bg="white", fg="black", padx=10, pady=10)
+        self.reShowFilm.pack(fill=X, side=LEFT, expand=True)
+        
+        Label(self.attachShow, font=("Arial", 25), text="Select Screen ID", pady=10).pack()
+        
+        editInfo = Frame(self.attachShow, bg=None, pady=0)
+        editInfo.pack(fill=X, expand=True, side=LEFT)
+        self.editScreen = Spinbox(editInfo, bg=None, state=DISABLED,from_=1, to=99999)
+        self.editScreen.pack()
+        
+        self.updateFrame = Frame(self.attachShow, height=200, width=200, bg=None, pady=10, padx=50)
+        self.updateFrame.pack(fill=X)
+        self.attachInfo = Button(self.updateFrame, text="UPDATE", font=("Arial", 25), state=DISABLED, command=lambda: self.commitChange()) #function
+        self.attachInfo.pack(fill=X, expand=True, side=TOP)
+        
+    def checkMessages(self):
+        if self.ASVmessageS == True:
+            self.ASVsuccess.pack_forget()
+            self.ASVmessageS = False
+        if self.ASVmessageE == True:
+            self.ASVerror.pack_forget()
+            self.ASVmessageE = False
+        
+    def fetchScreenNumbers(self):
+        showId = self.upShowSpin.get()
+        upShowInfo = self.controller.fetchScreenNumbers(showId)
+        self.checkMessages()
+        
+        if upShowInfo == 0:
+            self.editScreen.configure(state=DISABLED)
+            self.attachInfo.configure(state=DISABLED)
+            self.upShowTitle.configure("Show not found")
+        
+        self.reShowDate.configure(text="Date: " + str(upShowInfo[1]))
+        self.reShowTime.configure(text="Time: " + str(upShowInfo[2]))
+        self.reShowFilm.configure(text="Film: " + str(upShowInfo[3]))
+        self.editScreen.configure(state=NORMAL)
+        self.attachInfo.configure(state=NORMAL)
+            
+    def commitChange(self):
+        screenId = self.editScreen.get()
+        self.checkMessages()
+        
+        updateCheck = self.controller.commitChange(screenId)
+        if updateCheck == False:
+            self.ASVerror = Label(self.updateFrame, text="ERROR: SCREEN DOES NOT EXIST", font=("Arial", 25), fg="RED")
+            self.ASVerror.pack()
+            self.ASVmessageE = True
+        else:
+            self.ASVsuccess = Label(self.updateFrame, text="SUCCESS!", font=("Arial", 25), fg="Green")
+            self.ASVsuccess.pack()
+            self.ASVmessageS = True
+        
 
     """Sude Fidan 21068639"""
     def set_controller(self, controller):
         self.controller = controller
-
-    

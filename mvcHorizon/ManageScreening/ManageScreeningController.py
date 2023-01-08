@@ -25,3 +25,9 @@ class ManageScreeningController:
     """Cameron Povey 21011010"""
     def confirmChange(self, date, timeh, timem):
         return self.model.confirmChange(date, timeh, timem)
+    
+    def fetchScreenNumbers(self, showId):
+        return self.model.fetchScreenNumbers(showId)
+    
+    def commitChange(self, screenId):
+        return self.model.commitChange(screenId)
