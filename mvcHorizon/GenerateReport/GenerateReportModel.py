@@ -93,3 +93,61 @@ class GenerateReportModel:
         for column in self.curForMonthly.description:
             self.tempDbColumns.append(column[0])
         return self.tempDbColumns
+    
+    """Cameron Povey 21011010"""
+    def getTopFilms(self):
+        filmCount = self.conn.execute("SELECT * from Film")
+        filmInfo = filmCount.fetchall()
+        returnData = [[] for x in range(len(filmInfo))]
+        
+        for c in range(len(filmInfo)):
+            filmRev = 0
+            showIdsList = []
+        
+            showIdList = self.conn.execute("SELECT id from Show WHERE filmId = '%s'" % (filmInfo[c][0]))
+            showIds = showIdList.fetchall()
+                
+            for i in range(len(showIds)):
+                showIdsList.append(showIds[i][0])
+                if i == 0: strSIL = str(showIdsList[i])
+                else: strSIL = str(strSIL) + ", " + str(showIdsList[i])
+            
+            priceGet = self.conn.execute("SELECT price from Ticket WHERE showId IN (%s)" % (strSIL))
+            priceList = priceGet.fetchall()
+            print(priceList)
+            
+            for price in priceList:
+                filmRev = filmRev + price[0]
+                
+            returnData[c].append(filmInfo[c][0])
+            returnData[c].append(filmInfo[c][1])
+            returnData[c].append(filmRev)
+            
+        return returnData
+    
+    """Cameron Povey 21011010"""
+    def getTopStaff(self):
+        staffFetch = self.conn.execute("SELECT * from staff")
+        staffInfo = staffFetch.fetchall()
+        
+        returnData = [[] for x in range(len(staffInfo))]
+        
+        for c in range(len(staffInfo)):
+            print(c)
+            returnData[c].append(staffInfo[c][0]) #staff id
+            
+            print(staffInfo[c][6])
+            roleFetch = self.conn.execute("SELECT roleName from role WHERE roleId = '%s'" % (staffInfo[c][6]))
+            role = roleFetch.fetchone()[0]
+            returnData[c].append(role) #role id
+            
+            returnData[c].append(staffInfo[c][5]) #location
+            returnData[c].append(staffInfo[c][3]) #fname
+            returnData[c].append(staffInfo[c][4]) #lname
+            
+            bookingFetch = self.conn.execute("SELECT staffId from Ticket WHERE staffId = '%s'" % (staffInfo[c][0]))
+            bookingCount = len(bookingFetch.fetchall())
+            returnData[c].append(bookingCount)
+            
+        print(returnData)
+        return returnData

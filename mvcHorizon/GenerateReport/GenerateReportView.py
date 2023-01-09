@@ -78,6 +78,23 @@ class GenerateReportView(Frame):
         self.topFilm = Frame(self.notebook, width=740, height=280)
         self.topFilm.pack(fill='both', expand=True)
         self.notebook.add(self.topFilm, text='Top revenue\ngenerating film')
+        
+        columns = ('Film Id', 'Film Name', 'Revenue')
+        self.topFilmTree = ttk.Treeview(self.topFilm, columns=columns, show='headings')
+        self.topFilmTree.pack()
+        for col in (columns):
+            self.topFilmTree.heading(str(col), text=str(col), command=lambda: \
+                 self.treeview_sort_column(self.topFilmTree, col, False))
+            
+        Button(self.topFilm, text='Generate Data',command=lambda: self.getTopFilms(), pady=5).pack(fill=X)
+    
+    """Cameron Povey 21011010"""
+    def getTopFilms(self):
+        #self.topFilmTree.delete('', END, None)
+        topFilmList = (self.controller.getTopFilms())
+        print(topFilmList)
+        for row in topFilmList:
+            self.topFilmTree.insert('', END, values=row)
 
     """Cameron Povey 21011010"""
     def staffs_booking_view(self):
@@ -85,7 +102,33 @@ class GenerateReportView(Frame):
         self.staffsBooking = Frame(self.notebook, width=740, height=280)
         self.staffsBooking.pack(fill='both', expand=True)
         self.notebook.add(self.staffsBooking, text='Monthly list of staff\nmaking number of bookings')
+        
+        columns = ('Staff Id', 'Role', 'Cinema', 'First Name', 'Last Name', 'Bookings')
+        self.topStaffTree = ttk.Treeview(self.staffsBooking, columns=columns, show='headings')
+        self.topStaffTree.pack()
+        for col in (columns):
+            self.topStaffTree.heading(str(col), text=str(col), command=lambda: \
+                 self.treeview_sort_column(self.topStaffTree, col, False))
+            
+        Button(self.staffsBooking, text='Generate Data',command=lambda: self.getTopStaff(), pady=5).pack(fill=X)
     
+    """Cameron Povey 21011010"""
+    def getTopStaff(self):
+        topStaff = (self.controller.getTopStaff())
+        print(topStaff)
+        for row in topStaff:
+            self.topStaffTree.insert('', END, values=row)
+            
+    def treeview_sort_column(self, tree, column, reverse):
+        l = [(tree.set(i, column), i) for i in tree.get_children('')]
+        l.sort(reverse=reverse)
+        
+        for index, (val, i) in enumerate(l):
+            tree.move(i, '', index)
+
+        tree.heading(column, command=lambda: \
+                self.treeview_sort_column(tree, column, not reverse))
+            
 
     """Sude Fidan 21068639"""
     def set_controller(self, controller):

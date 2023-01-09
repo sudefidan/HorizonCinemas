@@ -15,3 +15,10 @@ class GenerateReportController:
     def get_monthly_cinema_report(self):
         return self.model.get_monthly_cinema_report()
     
+    """Cameron Povey 21011010"""
+    def getTopFilms(self):
+        return self.model.getTopFilms()
+    
+    """Cameron Povey 21011010"""
+    def getTopStaff(self):
+        return self.model.getTopStaff()
