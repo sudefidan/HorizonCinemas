@@ -94,3 +94,31 @@ class ManageScreeningModel:
         cursor.close()
         self.conn.commit()
         return 0
+    
+    def fetch_screen_numbers(self, showId):
+        showReturn = []
+        self.attachedShowId = showId
+        
+        cursor = self.conn.execute("SELECT * FROM Show Where Id = '%s'" % (self.attachedShowId))
+        showInfo = cursor.fetchone()
+        
+        if showInfo == None: return 0
+        
+        showReturn.append(showInfo[0])
+        showReturn.append(datetime.utcfromtimestamp(showInfo[1]/1000).strftime("%d/%m/%Y"))
+        showReturn.append(showInfo[2])
+        showReturn.append((self.conn.execute("SELECT name FROM Film WHERE Id = '%s'" % (showInfo[4]))).fetchone()[0])
+        
+        cursor.close()
+        return showReturn
+    
+    def commit_change(self, screenId):
+        cursor = self.conn.cursor()
+        screenFetch = self.conn.execute("SELECT Id FROM Screen WHERE Id = '%s'" % (screenId))
+        screenCheck = screenFetch.fetchone()
+        if screenCheck == None: return False
+        cursor.execute("UPDATE Show SET screenId = ? WHERE Id = ?", (screenId, self.attachedShowId))
+        self.conn.commit()
+        cursor.close()
+        screenFetch.close()
+        return 1

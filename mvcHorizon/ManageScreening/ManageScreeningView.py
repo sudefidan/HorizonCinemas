@@ -223,16 +223,89 @@ class ManageScreeningView(Frame):
     """Cameron Povey 21011010"""
     def confirm_change(self):
         date = self.newDate.get()
-        timeh = self.hoursEdited.get()
-        timem = self.minEdited.get()
-        self.controller.confirm_change(date, timeh, timem)
+        hour = self.hoursEdited.get()
+        minute = self.minEdited.get()
+        self.controller.confirm_change(date, hour, minute)
 
     """Cameron Povey 21011010"""
     def attach_show_view(self):
         #attach shows to screen/hall frame
-        self.attachShow = Frame(self.notebook, width=740, height=280)
-        self.attachShow.pack(fill='both', expand=True)
-        self.notebook.add(self.attachShow, text='Attach Shows to Screen/hall')
+        attachShow = Frame(self.notebook, width=740, height=280)
+        attachShow.pack(fill='both', expand=True)
+        self.notebook.add(attachShow, text='Attach Shows to Screen/hall')
+
+        self.successMessage = False
+        self.errorMessage = False
+        
+        line1 = Frame(attachShow, bg="cyan", pady=5)
+        line1.pack(fill=X)
+        
+        self.showTitle = Label(line1, text="Enter show ID", bg="cyan", font=("Arial", 25), fg='Black')
+        self.showTitle.pack(fill=BOTH, expand=True)
+        self.showSpin = Spinbox(line1, from_=1, to=999999)
+        self.showSpin.pack(fill=Y)
+        Button(line1, text="Find Show Times", bg="cyan", padx=2,pady=2, command=lambda: self.fetch_screen_numbers()).pack(fill=Y) #function
+
+        line2 = Frame(attachShow, bg="cyan", pady=5)
+        line2.pack(fill=X)
+        
+        self.reShowDate = Label(line2, text="Date: ", bg="white", fg="black", padx=10, pady=10)
+        self.reShowDate.pack(fill=X, side=LEFT, expand=True)
+        self.reShowTime = Label(line2, text="Time: ", bg="white", fg="black", padx=10, pady=10)
+        self.reShowTime.pack(fill=X, side=LEFT, expand=True)
+        self.reShowFilm = Label(line2, text="Film: ", bg="white", fg="black", padx=10, pady=10)
+        self.reShowFilm.pack(fill=X, side=LEFT, expand=True)
+        
+        Label(attachShow, font=("Arial", 25), text="Select Screen ID", pady=10).pack()
+        
+        editInfo = Frame(attachShow, bg=None, pady=0)
+        editInfo.pack(fill=X, expand=True, side=LEFT)
+        self.editScreen = Spinbox(editInfo, bg=None, state=DISABLED,from_=1, to=99999)
+        self.editScreen.pack()
+        
+        self.updateFrame = Frame(attachShow, height=200, width=200, bg=None, pady=10, padx=50)
+        self.updateFrame.pack(fill=X)
+        self.attachInfo = Button(self.updateFrame, text="UPDATE", font=("Arial", 25), state=DISABLED, command=lambda: self.commitChange()) #function
+        self.attachInfo.pack(fill=X, expand=True, side=TOP)
+        
+    def check_messages(self):
+        if self.successMessage == True:
+            self.success.pack_forget()
+            self.successMessage = False
+        if self.errorMessage == True:
+            self.error.pack_forget()
+            self.errorMessage = False
+        
+    def fetch_screen_numbers(self):
+        showId = self.showSpin.get()
+        upShowInfo = self.controller.fetch_screen_numbers(showId)
+        self.check_messages()
+        
+        if upShowInfo == 0:
+            self.editScreen.configure(state=DISABLED)
+            self.attachInfo.configure(state=DISABLED)
+            self.showTitle.configure("Show not found")
+        
+        self.reShowDate.configure(text="Date: " + str(upShowInfo[1]))
+        self.reShowTime.configure(text="Time: " + str(upShowInfo[2]))
+        self.reShowFilm.configure(text="Film: " + str(upShowInfo[3]))
+        self.editScreen.configure(state=NORMAL)
+        self.attachInfo.configure(state=NORMAL)
+            
+    def commit_change(self):
+        screenId = self.editScreen.get()
+        self.check_messages()
+        
+        updateCheck = self.controller.commit_change(screenId)
+        if updateCheck == False:
+            self.error = Label(self.updateFrame, text="ERROR: SCREEN DOES NOT EXIST", font=("Arial", 25), fg="RED")
+            self.error.pack()
+            self.errorMessage = True
+        else:
+            self.success = Label(self.updateFrame, text="SUCCESS!", font=("Arial", 25), fg="Green")
+            self.success.pack()
+            self.successMessage = True
+    
 
     """Sude Fidan 21068639"""
     def set_controller(self, controller):
