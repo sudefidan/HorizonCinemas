@@ -254,7 +254,7 @@ class HomepageModel:
     
     """Cameron Povey 21011010"""
     def cancel_cost(self):
-        todayTime = self.get_today_unix
+        todayTime = self.get_today_unix()
         
         cursor = self.conn.execute("SELECT date, time FROM Show WHERE Id = '%s'" % (self.bookingInfo[5]))
         selectedTimeAndDate = cursor.fetchone()
@@ -264,8 +264,8 @@ class HomepageModel:
         selectedTimeAndDate = int(selectedTimeAndDate[0]) + int(timems)
         cursor.close()
         
-        if selectedTimeAndDate < (todayTime + 86400000): return "SAME_DAY"
-        elif selectedTimeAndDate < (todayTime + 172800000): return "DAY_PRIOR"
+        if selectedTimeAndDate < (int(todayTime) + 86400000): return "SAME_DAY"
+        elif selectedTimeAndDate < (int(todayTime) + 172800000): return "DAY_PRIOR"
         else: return "CANCEL_FREE"
     
     """Cameron Povey 21011010"""

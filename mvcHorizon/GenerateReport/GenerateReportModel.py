@@ -48,7 +48,7 @@ class GenerateReportModel:
         ticketRecords = self.curForMonthly.fetchall()
         for i in ticketRecords:
             cinemaListMonthly.append([i[1],i[5]])
-        self.get_rows_for_cinema_revenue()
+        self.get_rows()
         dbColumns.extend([self.tempDbColumns[1],self.tempDbColumns[5]])
         self.tempDbColumns.clear()
        
@@ -58,7 +58,7 @@ class GenerateReportModel:
             showRecords = self.curForMonthly.fetchall()
             for i in showRecords:
                 cinemaListMonthly[x].extend([self.date_format(i[1]),i[3]])
-        self.get_rows_for_cinema_revenue()
+        self.get_rows()
         dbColumns.extend([self.tempDbColumns[1],self.tempDbColumns[3]])
         self.tempDbColumns.clear()
      
@@ -68,7 +68,7 @@ class GenerateReportModel:
             screenRecords = self.curForMonthly.fetchall()
             for i in screenRecords:
                 cinemaListMonthly[x].extend([i[2]])
-        self.get_rows_for_cinema_revenue()
+        self.get_rows()
         dbColumns.extend([self.tempDbColumns[2]])
         self.tempDbColumns.clear()
 
@@ -78,7 +78,7 @@ class GenerateReportModel:
             cinemaRecords = self.curForMonthly.fetchall()
             for i in cinemaRecords:
                 cinemaListMonthly[x].extend([i[1],i[2]])
-        self.get_rows_for_cinema_revenue()
+        self.get_rows()
         dbColumns.extend([self.tempDbColumns[1],self.tempDbColumns[2]])
         self.tempDbColumns.clear()
         #creates dataframe to calculate monthly revenue
@@ -89,13 +89,13 @@ class GenerateReportModel:
         return monthlyCinemaGet
 
     """Fiorella Scarpino 21010043"""
-    def get_rows_for_cinema_revenue(self):
+    def get_rows(self):
         for column in self.curForMonthly.description:
             self.tempDbColumns.append(column[0])
         return self.tempDbColumns
 
     """Fiorella Scarpino 21010043"""
-    def get_top_rev_report(self):
+    def get_top_film_report(self):
         totalRevFilm = []
         self.tempDbColumns = []
         dbColumnsFilm = []
@@ -105,7 +105,7 @@ class GenerateReportModel:
         ticketRecordsFilm = self.curForMonthly.fetchall()
         for i in ticketRecordsFilm:
             totalRevFilm.append([i[1],i[5]])
-        self.get_rows_for_cinema_revenue()
+        self.get_rows()
         dbColumnsFilm.extend([self.tempDbColumns[1],self.tempDbColumns[5]])
         self.tempDbColumns.clear()
        
@@ -115,7 +115,7 @@ class GenerateReportModel:
             showRecordsFilm = self.curForMonthly.fetchall()
             for i in showRecordsFilm:
                 totalRevFilm[x].extend([i[4]])
-        self.get_rows_for_cinema_revenue()
+        self.get_rows()
         dbColumnsFilm.extend([self.tempDbColumns[4]])
         self.tempDbColumns.clear()
 
@@ -125,7 +125,7 @@ class GenerateReportModel:
             filmRecords = self.curForMonthly.fetchall()
             for i in filmRecords:
                 totalRevFilm[x].extend([i[1]])
-        self.get_rows_for_cinema_revenue()
+        self.get_rows()
         dbColumnsFilm.extend([self.tempDbColumns[1]])
         self.tempDbColumns.clear()
 
@@ -133,9 +133,51 @@ class GenerateReportModel:
         df = pd.DataFrame(totalRevFilm, columns =dbColumnsFilm) 
         tempPD = df.groupby(['filmId','name'])
         
-        monthlyCinemaGet = tempPD['price'].sum().reset_index()
-        monthlyCinemaGet = monthlyCinemaGet.sort_values(['price'],ascending=False)
+        topFilmGet = tempPD['price'].sum().reset_index()
+        topFilmGet = topFilmGet.sort_values(['price'],ascending=False)
     
         self.curForMonthly.close()
-        return monthlyCinemaGet
+        return topFilmGet
+
+    """Sude Fidan 21068639""" 
+    def get_top_staff_report(self):
+        totalRevStaff = []
+        self.tempDbColumns = []
+        dbColumnsStaff = []
+
+        #gets price and staffid from ticket
+        self.curForMonthly = self.conn.execute("SELECT * from Ticket")
+        ticketRecordsStaff = self.curForMonthly.fetchall()
+
+        for i in ticketRecordsStaff:
+            totalRevStaff.append([i[1],i[4]])
+        self.get_rows()
+        dbColumnsStaff.extend([self.tempDbColumns[1],self.tempDbColumns[4]])
+
+        self.tempDbColumns.clear()
+
+        #get staff name and surname from staff
+        for x in range(len(totalRevStaff)):
+            self.curForMonthly = self.conn.execute("SELECT * from staff WHERE id = ?",(ticketRecordsStaff[x][4],))
+            staffRecords = self.curForMonthly.fetchall()
+            for i in staffRecords:
+                totalRevStaff[x].extend([i[3],i[4]])
+        self.get_rows()
+        dbColumnsStaff.extend([self.tempDbColumns[3], self.tempDbColumns[4]])
+        self.tempDbColumns.clear()
+
+        #creates dataframe to calculate top revenue staff
+        df = pd.DataFrame(totalRevStaff, columns =dbColumnsStaff) 
+        tempPD = df.groupby(['staffId','name', 'surname'])
+        
+        topStaffGet = tempPD['price'].sum().reset_index()
+        topStaffGet = topStaffGet.sort_values(['price'],ascending=False)
+    
+        self.curForMonthly.close()
+        return topStaffGet
+    
+    
+    
+
+
     

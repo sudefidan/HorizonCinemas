@@ -81,26 +81,42 @@ class GenerateReportView(Frame):
         topFilm.pack(fill='both', expand=True)
         self.notebook.add(topFilm, text='Top revenue\ngenerating film')
         columns = ('filmid','name','totalrevfilm')
-        self.topRevTree = ttk.Treeview(topFilm, columns=columns, show='headings')
-        self.topRevTree.pack()
-        self.topRevTree.heading('filmid', text='Film ID')
-        self.topRevTree.heading('name', text='Name')
-        self.topRevTree.heading('totalrevfilm', text='Total Revenue (£)')
-        Button(topFilm, text='Generate Data',command=lambda: self.display_top_rev(), width=12).pack()
+        self.topFilmTree = ttk.Treeview(topFilm, columns=columns, show='headings')
+        self.topFilmTree.pack()
+        self.topFilmTree.heading('filmid', text='Film ID')
+        self.topFilmTree.heading('name', text='Name')
+        self.topFilmTree.heading('totalrevfilm', text='Total Revenue (£)')
+        Button(topFilm, text='Generate Data',command=lambda: self.display_top_rev_film(), width=12).pack()
     
     """Fiorella Scarpino 21010043"""
-    def display_top_rev(self):
-        self.topRev = self.controller.get_top_rev_report()
-        topRevCinema = self.topRev.to_numpy().tolist()
+    def display_top_rev_film(self):
+        self.topRevFilm = self.controller.get_top_film_report()
+        topRevCinema = self.topRevFilm.to_numpy().tolist()
         for row in topRevCinema:
-            self.topRevTree.insert('', END, values=row)
+            self.topFilmTree.insert('', END, values=row)
 
-    """Cameron Povey 21011010"""
+    """Sude Fidan 21068639"""
     def staffs_booking_view(self):
         #monthly list of staff making number of bookings in sorted order frame
         self.staffsBooking = Frame(self.notebook, width=740, height=280)
         self.staffsBooking.pack(fill='both', expand=True)
         self.notebook.add(self.staffsBooking, text='Monthly list of staff\nmaking number of bookings')
+
+        columns = ('staffid','name','surname', 'totalrevstaff')
+        self.topStaffTree = ttk.Treeview( self.staffsBooking, columns=columns, show='headings')
+        self.topStaffTree.pack()
+        self.topStaffTree.heading('staffid', text='Staff ID')
+        self.topStaffTree.heading('name', text='Staff Name')
+        self.topStaffTree.heading('surname', text='Staff Surname')
+        self.topStaffTree.heading('totalrevstaff', text='Total Revenue (£)')
+        Button( self.staffsBooking, text='Generate Data',command=lambda: self.display_top_rev_staff(), width=12).pack()
+    
+    """Sude Fidan 21068639"""
+    def display_top_rev_staff(self):
+        self.topRev = self.controller.get_top_staff_report()
+        topRevCinema = self.topRev.to_numpy().tolist()
+        for row in topRevCinema:
+            self.topStaffTree.insert('', END, values=row)
 
     """Sude Fidan 21068639"""
     def set_controller(self, controller):

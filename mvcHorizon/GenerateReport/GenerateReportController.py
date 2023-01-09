@@ -19,6 +19,10 @@ class GenerateReportController:
         return self.model.get_monthly_cinema_report()
 
     """Fiorella Scarpino 21010043"""
-    def get_top_rev_report(self):
-        return self.model.get_top_rev_report()
+    def get_top_film_report(self):
+        return self.model.get_top_film_report()
+    
+    """Sude Fidan 21068639"""
+    def get_top_staff_report(self):
+        return self.model.get_top_staff_report()
     

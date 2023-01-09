@@ -18,9 +18,9 @@ class LoginModel:
             raise ValueError(f'Username or password cannot be empty!')
         else:
             #encryption
-            password_crypt = hashlib.sha256((password).encode()).hexdigest()
+            _password_crypt = hashlib.sha256((password).encode()).hexdigest()
             #select query
-            cursor = self.conn.execute('SELECT * from staff where USERNAME="%s" and PASSWORD="%s"'%(username,password_crypt))
+            cursor = self.conn.execute('SELECT * from staff where USERNAME="%s" and PASSWORD="%s"'%(username,_password_crypt))
             #fetch data 
             userDict = cursor.fetchone()
             cursor.close()

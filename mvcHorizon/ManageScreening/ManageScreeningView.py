@@ -107,6 +107,8 @@ class ManageScreeningView(Frame):
         self.removeFilm = Frame(self.notebook, width=740, height=280)
         self.removeFilm.pack(fill='both', expand=True)
         self.notebook.add(self.removeFilm, text='Remove Film')
+        Label(self.removeFilm, text="Please enter film details",bg="#0E6655", fg="white",font=("Arial",13,"bold"), width=100).pack(side=TOP)
+
 
         self.deleteFilm = StringVar()
 
@@ -143,13 +145,13 @@ class ManageScreeningView(Frame):
         self.notebook.add(self.updateShowTime, text='Update Show Times')
 
         #line 1
-        line1 = Frame(self.updateShowTime, bg="cyan", pady=5)
+        line1 = Frame(self.updateShowTime, bg="#0E6655", pady=5)
         line1.pack(fill=X)
         
-        Label(line1, text="Enter show ID", font=("Arial", 25), fg='Black', bg='Cyan').pack(fill=BOTH)
+        Label(line1, text="Enter show ID", font=("Arial", 25), fg='Black', bg='#0E6655').pack(fill=BOTH)
         self.update_shows = Spinbox(line1, from_=1, to=999999)
         self.update_shows.pack(fill=X)
-        Button(line1, text="Find Show Times", bg="cyan", padx=2,pady=2, command=lambda: self.get_show_times()).pack(fill=Y)
+        Button(line1, text="Find Show Times", bg="#0E6655", padx=2,pady=2, command=lambda: self.get_show_times()).pack(fill=Y)
         
         #line 2
         line2 = Frame(self.updateShowTime, bg="white", pady=5)
@@ -237,16 +239,16 @@ class ManageScreeningView(Frame):
         self.successMessage = False
         self.errorMessage = False
         
-        line1 = Frame(attachShow, bg="cyan", pady=5)
+        line1 = Frame(attachShow, bg="#0E6655", pady=5)
         line1.pack(fill=X)
         
-        self.showTitle = Label(line1, text="Enter show ID", bg="cyan", font=("Arial", 25), fg='Black')
+        self.showTitle = Label(line1, text="Enter show ID", bg="#0E6655", font=("Arial", 25), fg='Black')
         self.showTitle.pack(fill=BOTH, expand=True)
         self.showSpin = Spinbox(line1, from_=1, to=999999)
         self.showSpin.pack(fill=Y)
-        Button(line1, text="Find Show Times", bg="cyan", padx=2,pady=2, command=lambda: self.fetch_screen_numbers()).pack(fill=Y) #function
+        Button(line1, text="Find Show Times", bg="#0E6655", padx=2,pady=2, command=lambda: self.fetch_screen_numbers()).pack(fill=Y) #function
 
-        line2 = Frame(attachShow, bg="cyan", pady=5)
+        line2 = Frame(attachShow, bg="#0E6655", pady=5)
         line2.pack(fill=X)
         
         self.reShowDate = Label(line2, text="Date: ", bg="white", fg="black", padx=10, pady=10)
@@ -267,7 +269,8 @@ class ManageScreeningView(Frame):
         self.updateFrame.pack(fill=X)
         self.attachInfo = Button(self.updateFrame, text="UPDATE", font=("Arial", 25), state=DISABLED, command=lambda: self.commitChange()) #function
         self.attachInfo.pack(fill=X, expand=True, side=TOP)
-        
+
+    """Cameron Povey 21011010"""   
     def check_messages(self):
         if self.successMessage == True:
             self.success.pack_forget()
@@ -275,7 +278,8 @@ class ManageScreeningView(Frame):
         if self.errorMessage == True:
             self.error.pack_forget()
             self.errorMessage = False
-        
+
+    """Cameron Povey 21011010"""
     def fetch_screen_numbers(self):
         showId = self.showSpin.get()
         upShowInfo = self.controller.fetch_screen_numbers(showId)
@@ -291,7 +295,8 @@ class ManageScreeningView(Frame):
         self.reShowFilm.configure(text="Film: " + str(upShowInfo[3]))
         self.editScreen.configure(state=NORMAL)
         self.attachInfo.configure(state=NORMAL)
-            
+
+    """Cameron Povey 21011010"""      
     def commit_change(self):
         screenId = self.editScreen.get()
         self.check_messages()
@@ -306,7 +311,6 @@ class ManageScreeningView(Frame):
             self.success.pack()
             self.successMessage = True
     
-
     """Sude Fidan 21068639"""
     def set_controller(self, controller):
         self.controller = controller

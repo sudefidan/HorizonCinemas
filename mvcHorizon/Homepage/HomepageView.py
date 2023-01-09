@@ -60,7 +60,7 @@ class HomepageView(Frame):
         
         #movie scrollbar
         scrollbar = Scrollbar(self.listing, orient="vertical")
-        self.movieFrame=Listbox(self.listing,bg = "grey64",selectbackground="grey",activestyle = 'dotbox',yscrollcommand=scrollbar.set)
+        self.movieFrame=Listbox(self.listing,bg = "#0E6655",selectbackground="grey",activestyle = 'dotbox',yscrollcommand=scrollbar.set)
         self.movieFrame.pack(side=LEFT, fill='both', expand=True, anchor="n")
         scrollbar.config(command=self.movieFrame.yview)
 
@@ -126,14 +126,14 @@ class HomepageView(Frame):
         line1 = Frame(self.booking, bg="white")
         line1.pack(fill=X)
         
-        film = Frame(master=line1, bg="cyan", width=200, padx=5, pady=5)
+        film = Frame(master=line1, bg="#0E6655", width=200, padx=5, pady=5)
         film.pack(fill=BOTH, side=LEFT, expand=True)
-        Label(master=film, text="Select Film", bg="cyan", font=("Arial", 15), fg='black').pack(fill=Y)
+        Label(master=film, text="Select Film", bg="#0E6655", font=("Arial", 15), fg='black').pack(fill=Y)
         OptionMenu(film, self.filmOption, *filmList).pack(fill=Y)
         
-        date = Frame(master=line1,bg="cyan", width=200, padx=50,pady=5)
+        date = Frame(master=line1,bg="#0E6655", width=200, padx=50,pady=5)
         date.pack()
-        Label(master=date, text="Select Date", bg="cyan", font=("Arial", 15), fg='black').pack(fill=Y)
+        Label(master=date, text="Select Date", bg="#0E6655", font=("Arial", 15), fg='black').pack(fill=Y)
         self.dates = DateEntry(master=date, background="blue")
         self.dates.pack(fill=BOTH, side=LEFT, expand=True)
         Button(master=date, background="blue", command=lambda: self.update_shows(self.filmOption.get()), text="confirm").pack(fill=BOTH, side=LEFT, expand=True)
@@ -141,18 +141,18 @@ class HomepageView(Frame):
         line2 = Frame(self.booking, bg="white")
         line2.pack(fill=X)
         
-        showing = Frame(line2, bg="cyan", width=200, padx=5, pady=5)
+        showing = Frame(line2, bg="#0E6655", width=200, padx=5, pady=5)
         showing.pack(fill=BOTH, side=LEFT, expand=True)
-        Label(showing, text="Select Film Showing", bg="cyan", font=("Arial", 15), fg='black').pack(fill=Y)
+        Label(showing, text="Select Film Showing", bg="#0E6655", font=("Arial", 15), fg='black').pack(fill=Y)
         self.showingOptions = OptionMenu(showing, self.showOption, *showList, command=lambda: self.update_type()) #uptype
         self.showingOptions.pack(fill=Y)
         
-        type = Frame(line2, bg="cyan", width=200, padx=5, pady=5)
+        type = Frame(line2, bg="#0E6655", width=200, padx=5, pady=5)
         type.pack(fill=BOTH, side=LEFT, expand=True)
-        self.ticketTypeLabel = Label(type, text="Select Ticket Type", bg="cyan", font=("Arial", 15), fg='black')
+        self.ticketTypeLabel = Label(type, text="Select Ticket Type", bg="#0E6655", font=("Arial", 15), fg='black')
         self.ticketTypeLabel.pack()
         
-        types = Frame(type, width=200, bg='cyan')
+        types = Frame(type, width=200, bg='#0E6655')
         types.pack(fill=BOTH, expand=True)
         
         ticketType = StringVar(types, "low")
@@ -166,16 +166,16 @@ class HomepageView(Frame):
         line3 = Frame(self.booking, bg="white")
         line3.pack(fill=X)
         
-        ticketNumber = Frame(line3, bg="cyan", width=200, padx=5, pady=5)
+        ticketNumber = Frame(line3, bg="#0E6655", width=200, padx=5, pady=5)
         ticketNumber.pack(fill=BOTH, side=LEFT, expand=True)
-        self.selectedTicketNumber = Label(ticketNumber, text="Select Ticket Amount", bg="cyan", font=("Arial", 15), fg='black')
+        self.selectedTicketNumber = Label(ticketNumber, text="Select Ticket Amount", bg="#0E6655", font=("Arial", 15), fg='black')
         self.resetTicketAmount = Spinbox(ticketNumber, from_=1, to=9, command=lambda: self.reset_check())#rescheck
         self.selectedTicketNumber.pack(fill=Y)
         self.resetTicketAmount.pack(fill=Y)
         
-        check = Frame(line3, bg="cyan", width=200, padx=5, pady=5)
+        check = Frame(line3, bg="#0E6655", width=200, padx=5, pady=5)
         check.pack(fill=BOTH, side=LEFT, expand=True)
-        self.checkAvailabilityButton = Button(check, text="Check Avalibility",padx=5, pady=5, bg="cyan", command=lambda: self.calculate_cost())#calculate_cost
+        self.checkAvailabilityButton = Button(check, text="Check Avalibility",padx=5, pady=5, bg="#0E6655", command=lambda: self.calculate_cost())#calculate_cost
         self.checkAvailabilityButton.pack(fill=BOTH, expand=True)
         
         self.bookingCost = Label(self.booking, text="£~COST~", font=('Arial', 20), padx=25, pady=5)
@@ -234,7 +234,7 @@ class HomepageView(Frame):
         self.cvvNo.pack(fill=X)
         
         #Footer
-        foot = Frame(self.booking,pady=10, padx=10,bg="cyan")
+        foot = Frame(self.booking,pady=10, padx=10,bg="#0E6655")
         foot.pack(fill=BOTH, side=TOP ,expand=True)
         
         Button(foot, text="CANCEL", font=('Arial', 15), padx=2, pady=2, bg='grey').pack(fill=BOTH, side=TOP, expand=True) #RESET ALL?
@@ -383,10 +383,10 @@ class HomepageView(Frame):
         self.cancellation.pack(fill='both', expand=True)
         self.notebook.add(self.cancellation, text='Make Cancellation')
 
-        Label(self.cancellation, text="Enter Booking No:", bg="cyan", font=("Arial", 25), fg='Black').pack(fill=X)
-        cancellationBookingNos = Spinbox(self.cancellation, from_=1, to=999999)
-        cancellationBookingNos.pack(expand=True)
-        Button(self.cancellation, text="Find Booking info", bg="cyan", padx=2,pady=2, command=lambda: self.get_film_info()).pack()
+        Label(self.cancellation, text="Enter Booking No:", bg="#0E6655", font=("Arial", 25), fg='Black').pack(fill=X)
+        self.cancellationBookingNos = Spinbox(self.cancellation, from_=1, to=999999)
+        self.cancellationBookingNos.pack(expand=True)
+        Button(self.cancellation, text="Find Booking info", bg="#0E6655", padx=2,pady=2, command=lambda: self.get_film_info()).pack()
         
         #LIST OF INFO
         line1 = Frame(self.cancellation)
@@ -423,7 +423,7 @@ class HomepageView(Frame):
         self.cancellatedFilmDuration.pack(fill=X, side=LEFT, expand=True)
         #END OF LIST
         
-        self.cancelCostTitle = Label(self.cancellation, text="Cancel Cost: ", font=('Arial', 25) ,pady=10, bg="cyan", fg="black")
+        self.cancelCostTitle = Label(self.cancellation, text="Cancel Cost: ", font=('Arial', 25) ,pady=10, bg="#0E6655", fg="black")
         self.cancelCostTitle.pack(fill=X, expand=True)
         
         self.cancelButton =Button(self.cancellation, height=2, padx=25, pady=25, text="Cancel", state=DISABLED)
@@ -544,20 +544,20 @@ class HomepageView(Frame):
         self.notebook.add(self.new_cinema, text='Add New Cinema')
 
         padding = {'ipadx': 10, 'ipady': 10}
-        title = Label(self.new_cinema,text="Add New Cinema",font=14).pack(**padding)
+        Label(self.new_cinema, text="Please enter cinema details",bg="#0E6655", fg="white",font=("Arial",20,"bold"), width=800).pack(side=TOP)
 
         self.cityText = StringVar()
-        city_Label = Label(self.new_cinema, text='City', font=12).pack(**padding, fill=X)
+        Label(self.new_cinema, text='City', font=12).pack(**padding, fill=X)
         self.city_Entry = Entry(self.new_cinema, textvariable=self.cityText)
         self.city_Entry.pack(**padding, fill=X)
 
         self.locationText = StringVar()
-        location_Label = Label(self.new_cinema, text='Location', font=12).pack(**padding, fill=X)
+        Label(self.new_cinema, text='Location', font=12).pack(**padding, fill=X)
         self.location_Entry = Entry(self.new_cinema, textvariable=self.locationText)
         self.location_Entry.pack(**padding, fill=X)
 
         self.screenNumber = IntVar()
-        screen_Label = Label(self.new_cinema, text='Number of Screens', font=12).pack(**padding, fill=X)
+        Label(self.new_cinema, text='Number of Screens', font=12).pack(**padding, fill=X)
         self.screen_Entry = Entry(self.new_cinema, textvariable=self.screenNumber)
         self.screen_Entry.pack(**padding, fill=X)
 
