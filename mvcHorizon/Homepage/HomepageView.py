@@ -109,9 +109,17 @@ class HomepageView(Frame):
         self.notebook.add(self.booking, text='Make Booking')
         
         #Options set
-        filmList = self.controller.get_films_cinema()
+        loclist = self.controller.get_cinemas()
+        self.locOption = StringVar()
+        self.locOption.set("--SELECT LOCATION--")
+        self.controller.setLocation(self.locOption.get())
+        """
+        self.filmList = self.controller.get_films_cinema()
         self.filmOption = StringVar()
-        self.filmOption.set(filmList[0])
+        self.filmOption.set("--SELECT FILM--")
+        """
+        self.filmList = ["--SELECT FILM--"]
+        self.filmOption = StringVar()
         
         self.showOption = StringVar()
         showList = ["--SELECT SHOW TIME--"]
@@ -123,10 +131,21 @@ class HomepageView(Frame):
         line1 = Frame(self.booking, bg="white")
         line1.pack(fill=X)
         
+        print("yes")
+        if self.controller.showOtherBooking == True:
+            locSelAd = Frame(line1,bg="cyan", padx=50, pady=5)
+            locSelAd.pack(fill=X)
+            Label(locSelAd, text="Select Location (ADMIN ONLY)", bg="cyan", font=("Arial", 15), fg='black').pack(fill=Y)
+            
+            self.locSelor = OptionMenu(locSelAd, self.locOption, *loclist)
+            self.locSelor.pack(fill=Y)
+            Button(locSelAd, background="blue", command=lambda: self.setLocation(self.locOption.get()), text="Update").pack(fill=BOTH, side=LEFT, expand=True)
+        
         film = Frame(master=line1, bg="cyan", width=200, padx=5, pady=5)
         film.pack(fill=BOTH, side=LEFT, expand=True)
         Label(master=film, text="Select Film", bg="cyan", font=("Arial", 15), fg='black').pack(fill=Y)
-        OptionMenu(film, self.filmOption, *filmList).pack(fill=Y)
+        self.filmSel = OptionMenu(film, self.filmOption, *self.filmList)
+        self.filmSel.pack(fill=Y)
         
         date = Frame(master=line1,bg="cyan", width=200, padx=50,pady=5)
         date.pack()
@@ -134,7 +153,7 @@ class HomepageView(Frame):
         self.dates = DateEntry(master=date, background="blue")
         self.dates.pack(fill=BOTH, side=LEFT, expand=True)
         Button(master=date, background="blue", command=lambda: self.update_shows(self.filmOption.get()), text="confirm").pack(fill=BOTH, side=LEFT, expand=True)
-        
+            
         line2 = Frame(self.booking, bg="white")
         line2.pack(fill=X)
         
@@ -238,7 +257,18 @@ class HomepageView(Frame):
         self.bookButton = Button(foot, text="BOOK", font=('Arial', 15), padx=2, pady=2, bg='red', state=DISABLED, command=lambda: self.start_booking())
         self.bookButton.pack(fill=BOTH, side=TOP, expand=True)
         
-        self.update_shows(filmList[0])
+        #self.update_shows(self.filmList[0])
+    
+    """Cameron Povey 21011010"""
+    def setLocation(self,location):
+        self.controller.setLocation(location)
+        self.resetFilms()
+        
+    def resetFilms(self):
+        self.filmList = self.controller.get_films_cinema()
+        self.filmSel["menu"].delete(0, "end")
+        for film in self.filmList:
+            self.filmSel["menu"].add_command(label=film, command=lambda: self.filmOption.set(film)) #DOESNT WORK, SELECT TOP GUN: GOES AVATAR
 
     """Cameron Povey 21011010"""
     def update_shows(self, film):
@@ -246,7 +276,7 @@ class HomepageView(Frame):
         showlist = self.controller.existed_showing(film,selectedDate)
         self.showingOptions["menu"].delete(0, "end")
         for showings in showlist:
-            self.showingOptions["menu"].add_command(label=showings, command=lambda value=showings: [self.showOption.set(value),self.update_type()]) #uptype
+            self.showingOptions["menu"].add_command(label=showings, command=lambda: [self.showOption.set(showings),self.update_type()]) #uptype
         self.showOption.set("SELECT SHOW TIME")
         self.update_type()
         self.reset_check()
@@ -308,7 +338,7 @@ class HomepageView(Frame):
     """Cameron Povey 21011010"""
     def validated(self):
         self.bookingError.configure(text="CUSTOMER INFORMATION VALIDATED", fg='GREEN')
-        ticketInfo = self.controller.book_film(self.fname.get(), self.lname.get(), self.phoneNumber.get(), self.emailAddress.get(), self.cardNumber.get(), self.expDate, self.cvvNo.get())
+        ticketInfo = self.controller.book_film(self.fname.get(), self.lname.get(), self.phoneNumber.get(), self.emailAddress.get(), self.cardNumber.get(), self.expDate, self.cvvNo.get(), self.resetTicketAmount.get())
         self.confirmation_screen(ticketInfo)
     
     """Cameron Povey 21011010"""
@@ -351,7 +381,7 @@ class HomepageView(Frame):
             
         self.bookIdReturn = Label(self.booking, text="Booking ID: "+str(ticketInfo[0][0]), font=('Arial', 25) ,pady=10)
         self.bookIdReturn.pack()
-        self.priceReturn = Label(self.booking, text="Price: "+str(ticketInfo[0][1]), font=('Arial', 25) ,pady=10)
+        self.priceReturn = Label(self.booking, text="Price: "+str([2][0]), font=('Arial', 25) ,pady=10)
         self.priceReturn.pack()
         self.filmReturn = Label(self.booking, text="Film: "+str(ticketInfo[1]), font=('Arial', 25) ,pady=10)
         self.filmReturn.pack()
