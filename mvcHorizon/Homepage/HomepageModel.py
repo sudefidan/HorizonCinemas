@@ -10,7 +10,7 @@ class HomepageModel:
     def __init__(self):
         self = self
         #open database
-        self.conn = sqlite3.connect('database/horizoncinemas.db')
+        self.conn = sqlite3.connect('mvcHorizon/database/horizoncinemas.db')
 
     """Sude Fidan 21068639"""  
     def date_format(self, date):
@@ -281,13 +281,12 @@ class HomepageModel:
             self.conn.commit()
             return 0
         
-    
-    
+    def get_cinemas(self):
+         cursorCinemas = self.conn.execute("SELECT location FROM Cinema")
+         cinemaList = cursorCinemas.fetchall()
 
+         return_cinemas = []
+         for i in range(len(cinemaList)):
+             return_cinemas.append(cinemaList[i][0])
 
-
-
-
-
-    
-    
+         return return_cinemas

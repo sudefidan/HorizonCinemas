@@ -112,6 +112,11 @@ class HomepageView(Frame):
         self.notebook.add(self.booking, text='Make Booking')
         
         #Options set
+        loclist = self.controller.get_cinemas()
+        self.locOption = StringVar()
+        self.locOption.set(loclist[0])
+        self.controller.setLocation(loclist[0])
+        
         filmList = self.controller.get_films_cinema()
         self.filmOption = StringVar()
         self.filmOption.set(filmList[0])
@@ -126,10 +131,20 @@ class HomepageView(Frame):
         line1 = Frame(self.booking, bg="white")
         line1.pack(fill=X)
         
+        if self.controller.showOtherBooking == True:
+             locSelAd = Frame(line1,bg="cyan", padx=50, pady=5)
+             locSelAd.pack(fill=X)
+             Label(locSelAd, text="Select Location (ADMIN ONLY)", bg="cyan", font=("Arial", 15), fg='black').pack(fill=Y)
+
+             self.locSelor = OptionMenu(locSelAd, self.locOption, *loclist)
+             self.locSelor.pack(fill=Y)
+             Button(locSelAd, background="blue", command=lambda: self.setLocation(self.locOption.get()), text="Update").pack(fill=BOTH, side=LEFT, expand=True)
+        
         film = Frame(master=line1, bg="#0E6655", width=200, padx=5, pady=5)
         film.pack(fill=BOTH, side=LEFT, expand=True)
         Label(master=film, text="Select Film", bg="#0E6655", font=("Arial", 15), fg='black').pack(fill=Y)
-        OptionMenu(film, self.filmOption, *filmList).pack(fill=Y)
+        self.filmSelor = OptionMenu(film, self.filmOption, *filmList)
+        self.filmSelor.pack(fill=Y)
         
         date = Frame(master=line1,bg="#0E6655", width=200, padx=50,pady=5)
         date.pack()
@@ -242,6 +257,16 @@ class HomepageView(Frame):
         self.bookButton.pack(fill=BOTH, side=TOP, expand=True)
         
         self.update_shows(filmList[0])
+        
+    def setLocation(self, location):
+        self.controller.setLocation(location)
+        self.filmSelor["menu"].delete(0, "end")
+        filmlist = self.controller.get_films_cinema()
+        for film in filmlist:
+            self.filmSelor["menu"].add_command(label=film, command=lambda value=film: self.filmOption.set(value)) #uptype
+        self.filmOption.set("SELECT SHOW TIME")
+        self.update_shows(filmList[0])
+        
 
     """Cameron Povey 21011010"""
     def update_shows(self, film):
