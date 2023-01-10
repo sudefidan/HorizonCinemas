@@ -1,5 +1,6 @@
 """Sude Fidan 21068639"""
 """Cameron Povey 21011010"""
+"""Fiorella Scarpino 21010043"""
 import sqlite3
 from datetime import datetime
 import numbers
@@ -9,7 +10,7 @@ class ManageScreeningModel:
     def __init__(self):
         self = self
         #open database
-        self.conn = sqlite3.connect('database/horizoncinemas.db')
+        self.conn = sqlite3.connect(r'C:\Users\maria\Downloads\HorizonCinemas11111\HorizonCinemas-main\mvcHorizon\database\horizoncinemas.db')
 
     """Sude Fidan 21068639"""  
     def commit_add_film(self,name, cast,rating,genre,year, description, duration, age):
@@ -122,3 +123,45 @@ class ManageScreeningModel:
         cursor.close()
         screenFetch.close()
         return 1
+
+    """Fiorella Scarpino 21010043"""
+    def createNewFilm(self):
+        self.listOfFilms = []
+        #get film
+        self.curCreateNewShows = self.conn.execute("SELECT * from Film")
+        filmNewShow = self.curCreateNewShows.fetchall()
+        for i in filmNewShow:
+            self.listOfFilms.append([i[0],i[1]]) #id and location
+        self.curCreateNewShows.close()
+        return self.listOfFilms
+
+    """Fiorella Scarpino 21010043"""
+    def createNewCinema(self):
+        self.listOfCinemas = []
+        #get cinema
+        self.curCreateNewShowscinema = self.conn.execute("SELECT * from Cinema")
+        cinemaNewShow = self.curCreateNewShowscinema.fetchall()
+        for i in cinemaNewShow:
+            self.listOfCinemas.append([i[0],i[2]]) #id and location
+        self.curCreateNewShowscinema.close()
+        return self.listOfCinemas
+
+    """Fiorella Scarpino 21010043"""
+    def createNewScreen(self,userSelectionNewShows):
+        #get screeen
+        self.listOfScreens = []
+        userChoice = userSelectionNewShows[0]
+        self.curCreateNewscreen = self.conn.execute("SELECT * from Screen WHERE cinemaID = ?",(userChoice,))
+        screenNewShow = self.curCreateNewscreen.fetchall()
+        for i in screenNewShow:
+            self.listOfScreens.append([i[0],i[3]]) #id and screen number 
+        self.curCreateNewscreen.close()
+        return self.listOfScreens
+
+    """Fiorella Scarpino 21010043"""
+    def addDataForNewShow(self,newDateForShow,newTimeShow,screenUserShow,userSelectionNewShowsName):
+        print(newDateForShow,newTimeShow,screenUserShow,userSelectionNewShowsName)
+        self.conn.row_factory = sqlite3.Row
+        self.cursornewdata = self.conn.cursor()
+        self.cursornewdata.execute("INSERT INTO Show VALUES (NULL,?, ?, ?, ?)",(newDateForShow,newTimeShow,screenUserShow[0],userSelectionNewShowsName))
+        self.conn.commit()
