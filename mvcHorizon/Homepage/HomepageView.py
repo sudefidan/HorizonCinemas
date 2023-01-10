@@ -586,10 +586,15 @@ class HomepageView(Frame):
                 self.seatEntryArray.append(self.screenEntry)
             
             self.addCinemaButton = Button(self.new_cinema, text='Add New Cinema',command=lambda: self.add_new_cinema(), width=12).pack()
+            self.fromNewCinematoShowButton = Button(self.new_cinema, text='Add Screens',command=lambda: self.showManageScreening(), width=12).pack()
+        
         except TclError:  #validation for integer
             self.getScreenNumber['state'] = NORMAL
             messagebox.showerror(title = 'Error',message='Please enter an integer')
-
+    
+    def showManageScreening(self):
+        self.notebook.select(tab_id=3)
+        
     """Fiorella Scarpino 21010043"""
     def add_new_cinema(self):
         #get user data for new cinema
