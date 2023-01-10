@@ -1,5 +1,6 @@
 """Sude Fidan 21068639"""
 """Cameron Povey 21011010"""
+"""Fiorella Scarpino 21010043"""
 from ManageScreening.ManageScreeningModel import ManageScreeningModel
 from Entities.User import User
 
@@ -31,5 +32,22 @@ class ManageScreeningController:
     
     def commit_change(self, screenId):
         return self.model.commit_change(screenId)
+
+    """Fiorella Scarpino 21010043"""
+    def createNewFilm(self):
+        return self.model.createNewFilm()
+
+    """Fiorella Scarpino 21010043"""
+    def createNewCinema(self):
+        return self.model.createNewCinema()
+
+    """Fiorella Scarpino 21010043"""
+    def createNewScreen(self,userSelectionNewShows):
+        return self.model.createNewScreen(userSelectionNewShows)
+
+    """Fiorella Scarpino 21010043"""
+    def addDataForNewShow(self,newDateForShow,newTimeShow,screenUserShow,userSelectionNewShowsName):
+        return self.model.addDataForNewShow(newDateForShow,newTimeShow,screenUserShow,userSelectionNewShowsName)
+
 
 
