@@ -10,7 +10,7 @@ class ManageScreeningModel:
     def __init__(self):
         self = self
         #open database
-        self.conn = sqlite3.connect(r'C:\Users\maria\Downloads\HorizonCinemas11111\HorizonCinemas-main\mvcHorizon\database\horizoncinemas.db')
+        self.conn = sqlite3.connect('database/horizoncinemas.db')
 
     """Sude Fidan 21068639"""  
     def commit_add_film(self,name, cast,rating,genre,year, description, duration, age):
