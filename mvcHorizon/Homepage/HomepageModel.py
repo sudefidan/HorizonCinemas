@@ -70,10 +70,12 @@ class HomepageModel:
         screenList = []
         filmRef = []
         filmArr = []
-        
+
         #get cinema ID
         cinemasCursor = self.conn.execute("SELECT id FROM Cinema WHERE location = '%s'" % (location))
-        self.cinId = cinemasCursor.fetchone()[0]
+        self.cinId = cinemasCursor.fetchone()
+        if self.cinId == None: return 0
+        self.cinId = self.cinId[0]
         #fetch list of screens from cinema location
         screensCursor = self.conn.execute("SELECT id FROM Screen WHERE cinemaID = '%s'" % (self.cinId))
         scr = screensCursor.fetchall()
@@ -118,7 +120,8 @@ class HomepageModel:
         showArr = []
         self.selectedFilm = film
         findICursor = self.conn.execute("SELECT id FROM Film WHERE name = '%s'" % (film))
-        self.selectedFilmId = (findICursor.fetchone()[0])
+        self.selectedFilmId = findICursor.fetchone()
+        if self.selectedFilmId == None: return 0
         
         showfFindCursor = self.conn.execute("SELECT time FROM Show WHERE filmId='%s' AND screenId IN (%s) AND date = '%s'" % (self.selectedFilmId, self.strscrList, self.bookingDate))
         showings = showfFindCursor.fetchall()
@@ -200,7 +203,7 @@ class HomepageModel:
         return self.overprice
     
     """Cameron Povey 21011010"""
-    def book_film(self, fname, lname, phone, email, card, exp, cvv, staffId):
+    def book_film(self, fname, lname, phone, email, card, exp, cvv, staffId, tickCount):
         hallList = ["LOWER HALL", "UPPER HALL", "VIP"]
         hallType = hallList[self.selectedType]
         cursor = self.conn.cursor()
@@ -212,14 +215,20 @@ class HomepageModel:
             customerId = self.create_customer(fname, lname, phone, email, card, exp, cvv)
         #create ticket
         customerId = customerId[0]
-        cursor.execute("INSERT INTO Ticket (price, hallType, customerId, staffId, showId) VALUES (?, ?, ?, ?, ?)", (str(self.overprice), hallType, customerId, staffId, self.bookedShowId))
+        for i in range(int(tickCount)):
+            cursor.execute("INSERT INTO Ticket (price, hallType, customerId, staffId, showId) VALUES (?, ?, ?, ?, ?)", (str(self.overprice/tickCount), hallType, customerId, staffId, self.bookedShowId))
         cursor.close()
         self.conn.commit()
         
-        returnTicketInfoCursor = self.conn.execute("SELECT Id, price FROM Ticket WHERE customerId = '%s' AND showId = '%s'" % (customerId, self.bookedShowId))
-        tickinfo = (returnTicketInfoCursor.fetchone())
-        returnTicketInfoCursor.close()#close?
-        return [tickinfo, self.selectedFilm]
+        idList=[]
+        onePriceFetch = self.conn.execute("SELECT Price FROM Ticket WHERE customerId = '%s' AND showId = '%s'" % (customerId, self.bookedShowId))
+        onePrice = onePriceFetch.fetchall()
+        returnTicketInfoCursor = self.conn.execute("SELECT Id FROM Ticket WHERE customerId = '%s' AND showId = '%s'" % (customerId, self.bookedShowId))
+        returnTicketInfo = returnTicketInfoCursor.fetchall()
+        for i in range(len(returnTicketInfo)):
+            idList.append(returnTicketInfo[i][0])
+        returnTicketInfoCursor.close()
+        return [idList, onePrice, self.selectedFilm]
     
     """Cameron Povey 21011010"""
     def create_customer(self, fname, lname, phone, email, card, exp, cvv):
@@ -241,14 +250,30 @@ class HomepageModel:
     """Cameron Povey 21011010"""
     def get_film_info(self, bookId):
         cursorBooking = self.conn.execute("SELECT * FROM Ticket WHERE Id = '%s'" % (bookId))
-        self.bookingInfo= cursorBooking.fetchone()
-        if self.bookingInfo == None: return 0
+        self.allbooks = cursorBooking.fetchall()
+
+        if self.allbooks == None: return 0
+        self.bookingInfo = []
+
+        for i in range(len(self.allbooks[0])):
+            if i == 2: self.bookingInfo.append((self.allbooks[0][1])*len(self.allbooks))
+            else: self.bookingInfo.append(self.allbooks[0][i])
+
         cursorCustomer= self.conn.execute("SELECT * FROM Customer WHERE Id = '%s'" % (self.bookingInfo[3]))
         customerInfo = cursorCustomer.fetchone()
+
         cursorStaff = self.conn.execute("SELECT username FROM staff WHERE Id = '%s'" % (self.bookingInfo[4]))
         staffInfo = cursorStaff.fetchone()
+
         cursorFilm = self.conn.execute("SELECT * FROM Film WHERE Id = '%s'" % (self.bookingInfo[5]))
         filmInfo = cursorFilm.fetchone()
+        showGet = self.allbooks[0][5]
+
+        cursorfindstaff = self.conn.execute("SELECT Id FROM staff WHERE Id = '%s'" % (self.bookingInfo[4]))
+        staffid = cursorfindstaff.fetchone()
+
+        cursorallids = self.conn.execute("SELECT Id FROM Ticket WHERE customerId = '%s' AND staffId = '%s' AND showId = '%s'" % (customerInfo[0], staffid[0],showGet))
+        self.allids = cursorallids.fetchone()
         cursorBooking.close()
         return [self.bookingInfo, customerInfo, staffInfo, filmInfo]
     
@@ -271,8 +296,13 @@ class HomepageModel:
     """Cameron Povey 21011010"""
     def commit_cancel(self):
         cursor = self.conn.cursor()
+        idStr = []
+        for i in range(len(self.allids)):
+            idStr.append(self.allids[i][0])
+            if i == 0: idStr = str(self.allids[i])
+            else: idStr = str(idStr) + ", " + str(self.allids[i])
         try:
-            cursor.execute("DELETE FROM Ticket WHERE Id = '%s'" % (self.bookingInfo[0]))
+            cursor.execute("DELETE FROM Ticket WHERE Id IN '%s'" % (idStr))
             cursor.close()
             self.conn.commit()
             return 1
@@ -280,6 +310,15 @@ class HomepageModel:
             cursor.close()
             self.conn.commit()
             return 0
+    
+    def get_cinemas(self):
+        cursorCinemas = self.conn.execute("SELECT location FROM Cinema")
+        cinemaList = cursorCinemas.fetchall()
+
+        return_cinemas = []
+        for i in range(len(cinemaList)):
+            return_cinemas.append(cinemaList[i][0])
+        return return_cinemas
         
     
     
