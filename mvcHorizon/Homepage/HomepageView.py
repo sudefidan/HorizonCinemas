@@ -110,8 +110,12 @@ class HomepageView(Frame):
         self.booking = Frame(self.notebook, width=800, height=280)
         self.booking.pack(fill='both', expand=True)
         self.notebook.add(self.booking, text='Make Booking')
-        
+
         #Options set
+        loclist = self.controller.get_cinemas()
+        self.locOption = StringVar()
+        self.locOption.set(loclist[0])
+        self.controller.setLocation(loclist[0])
         filmList = self.controller.get_films_cinema()
         self.filmOption = StringVar()
         self.filmOption.set(filmList[0])
@@ -125,11 +129,21 @@ class HomepageView(Frame):
         
         line1 = Frame(self.booking, bg="white")
         line1.pack(fill=X)
+
+        if self.controller.showOtherBooking == True:
+            locSelAd = Frame(line1,bg="cyan", padx=50, pady=5)
+            locSelAd.pack(fill=X)
+            Label(locSelAd, text="Select Location (ADMIN ONLY)", bg="cyan", font=("Arial", 15), fg='black').pack(fill=Y)
+
+            self.locSelor = OptionMenu(locSelAd, self.locOption, *loclist)
+            self.locSelor.pack(fill=Y)
+            Button(locSelAd, background="blue", command=lambda: self.setLocation(self.locOption.get()), text="Update").pack(fill=BOTH, side=LEFT, expand=True)
         
         film = Frame(master=line1, bg="#0E6655", width=200, padx=5, pady=5)
         film.pack(fill=BOTH, side=LEFT, expand=True)
         Label(master=film, text="Select Film", bg="#0E6655", font=("Arial", 15), fg='black').pack(fill=Y)
-        OptionMenu(film, self.filmOption, *filmList).pack(fill=Y)
+        self.filmSelor = OptionMenu(film, self.filmOption, *filmList)
+        self.filmSelor.pack(fill=Y)
         
         date = Frame(master=line1,bg="#0E6655", width=200, padx=50,pady=5)
         date.pack()
@@ -243,6 +257,15 @@ class HomepageView(Frame):
         
         self.update_shows(filmList[0])
 
+    def setLocation(self, location):
+        self.controller.setLocation(location)
+        self.filmSelor["menu"].delete(0, "end")
+        filmlist = self.controller.get_films_cinema()
+        for film in filmlist:
+            self.filmSelor["menu"].add_command(label=film, command=lambda value=film: self.filmOption.set(value)) #uptype
+        self.filmOption.set("SELECT SHOW TIME")
+        self.update_shows(filmlist[0])
+
     """Cameron Povey 21011010"""
     def update_shows(self, film):
         selectedDate = self.dates.get_date().strftime("%d/%m/%Y")
@@ -311,9 +334,9 @@ class HomepageView(Frame):
     """Cameron Povey 21011010"""
     def validated(self):
         self.bookingError.configure(text="CUSTOMER INFORMATION VALIDATED", fg='GREEN')
-        ticketInfo = self.controller.book_film(self.fname.get(), self.lname.get(), self.phoneNumber.get(), self.emailAddress.get(), self.cardNumber.get(), self.expDate, self.cvvNo.get())
+        ticketInfo = self.controller.book_film(self.fname.get(), self.lname.get(), self.phoneNumber.get(), self.emailAddress.get(), self.cardNumber.get(), self.expDate, self.cvvNo.get(), self.resetTicketAmount.get())
         self.confirmation_screen(ticketInfo)
-    
+
     """Cameron Povey 21011010"""
     #reset forms
     def cusinfo_error(self, errorno):
@@ -354,7 +377,7 @@ class HomepageView(Frame):
             
         self.bookIdReturn = Label(self.booking, text="Booking ID: "+str(ticketInfo[0][0]), font=('Arial', 25) ,pady=10)
         self.bookIdReturn.pack()
-        self.priceReturn = Label(self.booking, text="Price: "+str(ticketInfo[0][1]), font=('Arial', 25) ,pady=10)
+        self.priceReturn = Label(self.booking, text="Price: "+str([2][0]), font=('Arial', 25) ,pady=10)
         self.priceReturn.pack()
         self.filmReturn = Label(self.booking, text="Film: "+str(ticketInfo[1]), font=('Arial', 25) ,pady=10)
         self.filmReturn.pack()
@@ -586,9 +609,14 @@ class HomepageView(Frame):
                 self.seatEntryArray.append(self.screenEntry)
             
             self.addCinemaButton = Button(self.new_cinema, text='Add New Cinema',command=lambda: self.add_new_cinema(), width=12).pack()
+            self.fromNewCinematoShowButton = Button(self.new_cinema, text='Add Screens',command=lambda: self.showManageScreening(), width=12).pack()
         except TclError:  #validation for integer
             self.getScreenNumber['state'] = NORMAL
             messagebox.showerror(title = 'Error',message='Please enter an integer')
+
+    """Fiorella Scarpino 21010043"""     
+    def showManageScreening(self):
+        self.notebook.select(tab_id=3)
 
     """Fiorella Scarpino 21010043"""
     def add_new_cinema(self):
