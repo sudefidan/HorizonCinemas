@@ -1,10 +1,13 @@
 """Sude Fidan 21068639"""
 """Cameron Povey 21011010"""
+"""Fiorella Scarpino 21010043"""
 from tkinter import *
 from tkinter import ttk
 from datetime import datetime
 from tkcalendar import DateEntry
-from tkinter import messagebox 
+from tkinter import messagebox
+from tkinter.ttk import Treeview
+import time
 
 class ManageScreeningView(Frame):
     """Sude Fidan 21068639"""
@@ -20,6 +23,7 @@ class ManageScreeningView(Frame):
     def manage_screening(self):
         self.add_film_view()
         self.remove_film_view()
+        self.add_new_shows()
         self.update_show_time_view()
         self.attach_show_view()
 
@@ -136,6 +140,99 @@ class ManageScreeningView(Frame):
         else:
             self.removeFilmErrorLabel.config(text ="Please enter all fields!", font=('Arial', 20) ,pady=10,width=50, bg=None, fg="Red")
         self.removeFilmErrorLabel.pack()
+    
+    """Fiorella Scarpino 21010043"""
+    def add_new_shows(self):
+        #add new shows
+        self.newShows = Frame(self.notebook, width=740, height=280)
+        self.newShows.pack(fill='both', expand=True)
+        self.notebook.add(self.newShows, text='Add New Shows')
+
+        #for padding
+        self.padding = {'ipadx': 10, 'ipady': 10}
+        title = Label(self.newShows,text="Add New Shows",bg="#0E6655", fg="white",font=14).pack(**self.padding)
+
+        #date
+        dateCreateShowLabel = Label(self.newShows, text='Choose Date', bg="#0E6655", fg="white",font=12).pack(**self.padding, fill=X)
+        self.dateCreateShow = DateEntry(self.newShows)
+        self.dateCreateShow.pack(**self.padding, fill=X)
+
+        #time
+        timeCreateShowLabel = Label(self.newShows, text='Choose Time', bg="#0E6655", fg="white",font=12).pack(**self.padding, fill=X)
+        hourString=StringVar()
+        minutesString=StringVar()
+        self.timeCreateShowHours = Spinbox(self.newShows,from_=0,to=23,wrap=True,textvariable=hourString,state="readonly")
+        self.timeCreateShowMin = Spinbox(self.newShows,from_ =0, to=59, wrap=True, textvariable=minutesString)
+        self.timeCreateShowHours.pack(side=TOP,**self.padding)
+        self.timeCreateShowMin.pack(side=TOP,**self.padding)
+
+        #film
+        self.filmCreateShow = StringVar()
+        filmrecords = self.controller.createNewFilm()
+        filmCreateShowVariable = StringVar(self.newShows)
+        filmCreateShowVariable.set(filmrecords[0]) 
+        filmCreateShowLabel = Label(self.newShows, text='Choose Film',bg="#0E6655", fg="white", font=12).pack(**self.padding, fill=X)
+        self.filmCreateShowOption = OptionMenu(self.newShows, filmCreateShowVariable, *filmrecords)
+        self.filmCreateShowOption.pack()
+
+        #cinema
+        cinemarecords = self.controller.createNewCinema()
+        self.cinemaCreateShowVariable = StringVar(self.newShows)
+        self.cinemaCreateShowVariable.set('Choose a Cinema')
+        cinemaCreateShowLabel = Label(self.newShows, text='Choose Cinema', bg="#0E6655", fg="white",font=12).pack(**self.padding, fill=X)
+        cinemaCreateShow = OptionMenu(self.newShows, self.cinemaCreateShowVariable, *cinemarecords,command=self.dataForOptionScreen)
+        cinemaCreateShow.pack()
+        cinemaCreateShow.bind('<<OptionMenuSelect>>',self.dataForOptionScreen)
+
+        #screen
+        self.screenCreateShowVariable = StringVar(self.newShows)
+        screenCreateShowLabel = Label(self.newShows, text='Choose Screen', bg="#0E6655", fg="white",font=12).pack(**self.padding, fill=X)
+        columns = ('screenid')
+        self.AddNewShowsTree = ttk.Treeview(self.newShows, columns=columns, show='headings')
+        self.AddNewShowsTree.pack(side=RIGHT,fill='both', expand=True, anchor="n")
+        self.AddNewShowsTree.heading('screenid', text='Screen')
+
+        #final button
+        self.finalCreateNewButton = Button(self.newShows, text="Confirm Option",command=lambda: self.screenNewShowsGet(),)
+        self.finalCreateNewButton.pack(**self.padding)
+
+    """Fiorella Scarpino 21010043"""
+    def dataForOptionScreen(self,selection):
+        #delete data from treeview
+        for item in self.AddNewShowsTree.get_children():
+            self.AddNewShowsTree.delete(item)
+        self.userSelectionNewShows = ''
+        self.userSelectionNewShows = (selection)
+
+        #gets data of screens
+        self.screenToOutput = []
+        screenrecords = self.controller.createNewScreen(self.userSelectionNewShows)
+        for i in screenrecords:
+            self.screenToOutput.append(i[1])
+        for row in self.screenToOutput:
+                self.AddNewShowsTree.insert('', END, values=row)
+
+    """Fiorella Scarpino 21010043"""
+    def screenNewShowsGet(self):
+        selectedScreen = self.AddNewShowsTree.focus()
+        newScreenSelected = self.AddNewShowsTree.item(selectedScreen)
+        self.screenUserShow = newScreenSelected.get("values")
+        userSelectionNewShowsName = self.userSelectionNewShows[0]#cinema
+        dateNewShow = self.dateCreateShow.get()#date
+        #formats the date
+        self.newDateForShow = time.mktime(datetime.strptime(dateNewShow, "%m/%d/%y").timetuple())
+        self.newDateForShow = self.newDateForShow * 1000 #turns into milliseconds
+
+        #time
+        hoursTime = self.timeCreateShowHours.get()
+        minutesTime = self.timeCreateShowMin.get()
+        #formats the time
+        if int(hoursTime) <=9:
+            hoursTime = '0'+ hoursTime
+        if int(minutesTime) <= 9:
+            minutesTime = '0'+ minutesTime
+        self.newTimeShow = hoursTime + ":" + minutesTime
+        self.dataToAddForShow = self.controller.addDataForNewShow(self.newDateForShow,self.newTimeShow,self.screenUserShow,userSelectionNewShowsName)
 
     """Cameron Povey 21011010"""
     def update_show_time_view(self):
