@@ -50,7 +50,13 @@ class HomepageController:
     
     """Cameron Povey 21011010"""
     def get_films_cinema(self):
-        return (self.model.get_films_cinema(self.application.user.location))
+        if self.showOtherBooking == True:
+             location = self.manualLoc
+        else:
+             location = self.application.user.location
+        if location == "--SELECT LOCATION--":
+             return None
+        return (self.model.get_films_cinema(location))
 
     """Cameron Povey 21011010"""
     def existed_showing(self,film,date):
@@ -64,9 +70,9 @@ class HomepageController:
     def calculate_cost(self, typesel, amount):
         return (self.model.calculate_cost(typesel, amount))
         
-    """Cameron Povey 21011010"""
-    def book_film(self, fname, lname, phone, email, card, exp, cvv):
-        return self.model.book_film(fname, lname, phone, email, card, exp, cvv, self.application.user.id)
+    """Cameron Povey 21011010"""    
+    def book_film(self, fname, lname, phone, email, card, exp, cvv, tickCount):
+        return self.model.book_film(fname, lname, phone, email, card, exp, cvv, self.application.user.id, tickCount)
     
     """Cameron Povey 21011010"""
     def get_film_info(self, id):
@@ -79,6 +85,14 @@ class HomepageController:
     """Cameron Povey 21011010"""
     def commit_cancel(self):
         return (self.model.commit_cancel())
+
+    """Cameron Povey 21011010"""
+    def get_cinemas(self):
+        return (self.model.get_cinemas())
+
+    """Cameron Povey 21011010"""
+    def setLocation(self, location):
+         self.manualLoc = location
     
     
     
